@@ -176,7 +176,7 @@ class ProductsSection extends StatelessWidget {
                           maxLines: 1,
                           style: TextStyle(
                               fontSize: 14.sp, fontWeight: FontWeight.bold)),
-                      Text("SAR ${product.price}",
+                      Text("SAR ${product.price.toStringAsFixed(2)}",
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: 18.sp,

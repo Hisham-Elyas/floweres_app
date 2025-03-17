@@ -43,7 +43,7 @@ class BannerSection extends StatelessWidget {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(10.r),
                     child: Container(
-                      color: AppColor.primaryColor,
+                      color: AppColor.secondaryColor2,
                       width: double.infinity,
                       child: CachedNetworkImage(
                         imageUrl: i.imageUrl,

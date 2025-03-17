@@ -21,15 +21,13 @@ class HomeScreen extends StatelessWidget {
           imageUrl:
               "https://cdn.salla.sa/form-builder/AxYPwEeamyUfaMJAnVot8a2HMLl0fQdjT6DbZRes.png",
           fit: BoxFit.cover,
-          progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-            child: Skeletonizer(
-              enableSwitchAnimation: true,
-              enabled: true,
-              child: Skeleton.shade(child: Icon(Iconsax.image, size: 60.dm)),
-            ),
+          progressIndicatorBuilder: (context, url, downloadProgress) =>
+              Skeletonizer(
+            enableSwitchAnimation: true,
+            enabled: true,
+            child: Skeleton.shade(child: Icon(Iconsax.image, size: 50.dm)),
           ),
-          errorWidget: (context, url, error) =>
-              const Center(child: Icon(Icons.error)),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
         ),
         actions: [
           // const Spacer(),

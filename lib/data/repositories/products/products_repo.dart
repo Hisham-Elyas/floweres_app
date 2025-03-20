@@ -28,6 +28,27 @@ class ProductsRepo extends GetxController {
     }
   }
 
+  Future<List<ProductsModel>> getAllProductsByCategories(
+      {required String categoryId}) async {
+    try {
+      final snapshot = await _db
+          .collection("Products")
+          .where("categoriesIds", arrayContains: categoryId)
+          .get();
+      final result =
+          snapshot.docs.map((doc) => ProductsModel.fromSnapshot(doc)).toList();
+
+      return result;
+    } on FirebaseException catch (e) {
+      throw HFirebaseException(e.code).message;
+    } on PlatformException catch (e) {
+      throw HPlatformException(e.code).message;
+    } catch (e) {
+      print(e);
+      throw "Someting went weong. pleas try agin";
+    }
+  }
+
   // Listen to real-time database updates
   Stream<List<ProductsModel>> getAllProductsStream() {
     return _db

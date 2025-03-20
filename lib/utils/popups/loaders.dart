@@ -42,7 +42,7 @@ class HLoaders {
       isDismissible: true,
       shouldIconPulse: true,
       colorText: Colors.white,
-      backgroundColor: HColors.primary,
+      backgroundColor: const Color(0xff22c55e).withOpacity(0.8),
       snackPosition: SnackPosition.BOTTOM,
       duration: Duration(seconds: duration),
       margin: const EdgeInsets.all(10),

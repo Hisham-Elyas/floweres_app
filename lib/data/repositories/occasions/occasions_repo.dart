@@ -31,7 +31,7 @@ class OccasionsRepo extends GetxController {
   Stream<List<OccasionsModel>> getAllOccasionsStream() {
     return _db
         .collection("Occasions")
-        .orderBy('name')
+        // .orderBy('name')
         .where('isActive', isEqualTo: true)
         .snapshots()
         .map((snapshot) {

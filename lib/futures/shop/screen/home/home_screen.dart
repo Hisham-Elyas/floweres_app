@@ -1,10 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../widget/app_bar.dart';
+import '../widget/app_drawer.dart';
 import 'widget/banner_section.dart';
 import 'widget/occasions_section.dart';
 import 'widget/products_section.dart';
@@ -15,38 +13,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: CachedNetworkImage(
-          height: 50.h,
-          imageUrl:
-              "https://cdn.salla.sa/form-builder/AxYPwEeamyUfaMJAnVot8a2HMLl0fQdjT6DbZRes.png",
-          fit: BoxFit.cover,
-          progressIndicatorBuilder: (context, url, downloadProgress) =>
-              Skeletonizer(
-            enableSwitchAnimation: true,
-            enabled: true,
-            child: Skeleton.shade(child: Icon(Iconsax.image, size: 50.dm)),
-          ),
-          errorWidget: (context, url, error) => const Icon(Icons.error),
-        ),
-        actions: [
-          // const Spacer(),
-          Icon(Icons.search_outlined,
-              color: Theme.of(context).colorScheme.onSurface),
-          SizedBox(width: 5.w),
-          Icon(Icons.person_2_outlined,
-              color: Theme.of(context).colorScheme.onSurface),
-          IconButton(
-              icon: Badge(
-                isLabelVisible: true,
-                label: const Text("0"),
-                child: Icon(Icons.shopping_cart_outlined,
-                    color: Theme.of(context).colorScheme.onSurface),
-              ),
-              onPressed: () {})
-        ],
-      ),
-      drawer: const MyAppBar(),
+      appBar: const MyAppBar(),
+      drawer: const MyDrawer(),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(

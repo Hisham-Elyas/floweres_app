@@ -2,17 +2,30 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 import 'firebase_options.dart';
-import 'futures/shop/screen/home/home_screen.dart';
+import 'routes/app_routes.dart';
+import 'routes/routes.dart';
+import 'routes/routes_observers.dart';
 import 'utils/helpers/network_manager.dart';
 
 void main() async {
+  // Ensure that widgets are initialized
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put(NetworkManager());
+
+  // Initialize GetX Local Storage
+  GetStorage.init();
+
+  // Remove # sign from url
+  setPathUrlStrategy();
+
+  // Initialize Firebase & Authentication Repository
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Main App Starts here...
 
   await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());
@@ -27,13 +40,25 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: const Size(549, 960),
       builder: (context, child) => GetMaterialApp(
+        navigatorObservers: [
+          RouteObservers(),
+        ],
         debugShowCheckedModeBanner: false,
         title: 'Floweres App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFae614d)),
           useMaterial3: true,
         ),
-        home: const HomeScreen(),
+        initialBinding: BindingsBuilder(
+          () => Get.lazyPut(() => NetworkManager(), fenix: true),
+        ),
+        // home: const HomeScreen(),
+        getPages: HAppRoutes.pages,
+        initialRoute: HRoutes.home,
+        unknownRoute: GetPage(
+            name: "/page-not-found",
+            page: () =>
+                const Scaffold(body: Center(child: Text("Page Not Found")))),
       ),
     );
   }

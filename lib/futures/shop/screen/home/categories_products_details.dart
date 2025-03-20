@@ -1,81 +1,59 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:floweres_app/futures/shop/model/products_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../../app_coloer.dart';
-import '../../../controller/cart/cart_controller.dart';
-import '../../../controller/products/products_controller.dart';
+import '../../../../app_coloer.dart';
+import '../../controller/cart/cart_controller.dart';
+import '../../controller/products/categories_products_details_controller.dart';
+import '../../controller/products/products_controller.dart';
+import '../../model/products_model.dart';
+import '../widget/app_bar.dart';
+import '../widget/app_drawer.dart';
 
-class ProductsSection extends StatelessWidget {
-  const ProductsSection({super.key});
+class CategoriesProductsDetails extends StatelessWidget {
+  const CategoriesProductsDetails({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final productsController = Get.put(ProductsController());
-    return Obx(() {
-      return Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
-            child: Row(children: [
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "All Products For Test",
-                        style: TextStyle(
-                            color: AppColor.primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.sp),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const Spacer(),
-              SizedBox(
-                height: 50.h,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 0),
-                    side: const BorderSide(
-                        color: AppColor.secondaryColor, width: 1),
-                  ),
-                  onPressed: () {},
-                  child: Text("See All",
-                      style: TextStyle(
-                          color: AppColor.primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.sp)),
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+    final ctegoriesProductsDetailsController =
+        CategoriesProductsDetailsController.instance;
+    // ctegoriesProductsDetailsController.getProductByCategories(
+    //     categoryId: categoryId);
+    return Scaffold(
+      key: scaffoldKey,
+      appBar: const MyAppBar(),
+      drawer: MyDrawer(scaffoldKey: scaffoldKey),
+      body: Obx(() {
+        return ctegoriesProductsDetailsController.isLoading.value
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : GridView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                itemCount: ctegoriesProductsDetailsController.items.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1,
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 5,
                 ),
-              ),
-            ]),
-          ),
-          SizedBox(
-            height: 350.h,
-            child: ListView.builder(
-              itemCount: productsController.allItems.length,
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final product = productsController.allItems[index];
-                return ProductItme(product: product);
-              },
-            ),
-          ),
-        ],
-      );
-    });
+                itemBuilder: (context, index) {
+                  final product =
+                      ctegoriesProductsDetailsController.items[index];
+                  return CategoriesProductItme(product: product);
+                },
+              );
+      }),
+    );
   }
 }
 
-class ProductItme extends StatelessWidget {
-  const ProductItme({
+class CategoriesProductItme extends StatelessWidget {
+  const CategoriesProductItme({
     super.key,
     required this.product,
   });

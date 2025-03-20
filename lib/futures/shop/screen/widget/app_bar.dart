@@ -5,78 +5,53 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../../utils/constants/colors.dart';
-import '../../../../../utils/constants/sizes.dart';
-import '../../controller/categories/categories_controller.dart';
-import 'appbar/menu_item.dart';
+import '../../../../routes/routes.dart';
+import '../../../../utils/device/device_utility.dart';
+import '../../controller/cart/cart_controller.dart';
 
-class MyAppBar extends StatelessWidget {
+class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final categoriesController = Get.put(CategoriesController());
-    return Drawer(
-      shape: const BeveledRectangleBorder(),
-      child: Container(
-        decoration: const BoxDecoration(
-            // color: HColors.white,
-            border: Border(
-          right: BorderSide(color: HColors.grey, width: 1),
-        )),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              DrawerHeader(
-                child: CachedNetworkImage(
-                  imageUrl:
-                      "https://cdn.salla.sa/form-builder/AxYPwEeamyUfaMJAnVot8a2HMLl0fQdjT6DbZRes.png",
-                  fit: BoxFit.cover,
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      Skeletonizer(
-                    enableSwitchAnimation: true,
-                    enabled: true,
-                    child:
-                        Skeleton.shade(child: Icon(Iconsax.image, size: 60.dm)),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ),
-              ),
-              const SizedBox(height: HSizes.spaceBtwItems),
-              Padding(
-                padding: const EdgeInsets.all(HSizes.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("MENU",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .apply(letterSpacingDelta: 1.2)),
-
-                    /// Menu Item
-                    Obx(() {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: categoriesController.allItems.length,
-                        itemBuilder: (context, index) => MenuItem(
-                          icon: Iconsax.category_2,
-                          itemName: categoriesController.allItems[index].name,
-                          onTap: () {
-                            print(index);
-                          },
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              )
-            ],
-          ),
+    final cartController = Get.put(CartController());
+    return AppBar(
+      title: CachedNetworkImage(
+        height: 50.h,
+        imageUrl:
+            "https://cdn.salla.sa/form-builder/AxYPwEeamyUfaMJAnVot8a2HMLl0fQdjT6DbZRes.png",
+        fit: BoxFit.cover,
+        progressIndicatorBuilder: (context, url, downloadProgress) =>
+            Skeletonizer(
+          enableSwitchAnimation: true,
+          enabled: true,
+          child: Skeleton.shade(child: Icon(Iconsax.image, size: 50.dm)),
         ),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
+      actions: [
+        // const Spacer(),
+        Icon(Icons.search_outlined,
+            color: Theme.of(context).colorScheme.onSurface),
+        SizedBox(width: 5.w),
+        Icon(Icons.person_2_outlined,
+            color: Theme.of(context).colorScheme.onSurface),
+        IconButton(icon: Obx(() {
+          return Badge(
+            isLabelVisible: true,
+            label: Text("${cartController.cartItmes.length}"),
+            child: Icon(Icons.shopping_cart_outlined,
+                color: Theme.of(context).colorScheme.onSurface),
+          );
+        }), onPressed: () {
+          Get.toNamed(
+            HRoutes.cart,
+          );
+        })
+      ],
     );
   }
+
+  @override
+  Size get preferredSize => Size.fromHeight(HDeviceUtils.getAppBarHeight());
 }

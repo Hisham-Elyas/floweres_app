@@ -51,9 +51,7 @@ class OccasionsSection extends StatelessWidget {
                 ctegoriesProductsDetailsController.getProductByCategories(
                   categoryId: occasionController.allItems[index].id,
                 );
-                Get.offNamed(
-                  HRoutes.categoriesProductsDetails,
-                );
+                Get.toNamed(HRoutes.categories);
               },
               child: Column(
                 children: [

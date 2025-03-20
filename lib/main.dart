@@ -25,9 +25,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await ScreenUtil.ensureScreenSize();
   // Main App Starts here...
 
-  await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());
 }
 
@@ -53,12 +53,12 @@ class MyApp extends StatelessWidget {
           () => Get.lazyPut(() => NetworkManager(), fenix: true),
         ),
         // home: const HomeScreen(),
-        getPages: HAppRoutes.pages,
         initialRoute: HRoutes.home,
-        unknownRoute: GetPage(
-            name: "/page-not-found",
-            page: () =>
-                const Scaffold(body: Center(child: Text("Page Not Found")))),
+        getPages: HAppRoutes.pages,
+        // unknownRoute: GetPage(
+        //     name: "/page-not-found",
+        //     page: () =>
+        //         const Scaffold(body: Center(child: Text("Page Not Found")))),
       ),
     );
   }

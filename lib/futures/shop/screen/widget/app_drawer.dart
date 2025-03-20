@@ -75,9 +75,8 @@ class MyDrawer extends StatelessWidget {
                               categoryId:
                                   categoriesController.allItems[index].id,
                             );
-                            Get.offNamed(
-                              HRoutes.categoriesProductsDetails,
-                            );
+                            Get.toNamed(HRoutes.categories);
+                            // Get.toNamed(HRoutes.cart);
                             scaffoldKey?.currentState?.closeDrawer();
                           },
                         ),

@@ -44,9 +44,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                 color: Theme.of(context).colorScheme.onSurface),
           );
         }), onPressed: () {
-          Get.toNamed(
-            HRoutes.cart,
-          );
+          Get.toNamed(HRoutes.cart);
         })
       ],
     );

@@ -10,7 +10,7 @@ class HAppRoutes {
     GetPage(name: HRoutes.home, page: () => const HomeScreen()),
     GetPage(name: HRoutes.cart, page: () => const CartScreen()),
     GetPage(
-        name: HRoutes.categoriesProductsDetails,
+        name: HRoutes.categories,
         page: () => const CategoriesProductsDetails()),
   ];
 }

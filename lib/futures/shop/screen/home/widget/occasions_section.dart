@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../../../app_coloer.dart';
+import '../../../../../routes/routes.dart';
 import '../../../controller/occasion/occasion_controller.dart';
+import '../../../controller/products/categories_products_details_controller.dart';
 
 class OccasionsSection extends StatelessWidget {
   const OccasionsSection({super.key});
@@ -43,7 +45,16 @@ class OccasionsSection extends StatelessWidget {
           itemCount: occasionController.allItems.length,
           itemBuilder: (context, index) {
             return GestureDetector(
-              onTap: () {},
+              onTap: () {
+                final ctegoriesProductsDetailsController =
+                    Get.put(CategoriesProductsDetailsController());
+                ctegoriesProductsDetailsController.getProductByCategories(
+                  categoryId: occasionController.allItems[index].id,
+                );
+                Get.offNamed(
+                  HRoutes.categoriesProductsDetails,
+                );
+              },
               child: Column(
                 children: [
                   CircleAvatar(

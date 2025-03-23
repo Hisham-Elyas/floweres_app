@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'firebase_options.dart';
@@ -10,13 +9,14 @@ import 'routes/app_routes.dart';
 import 'routes/routes.dart';
 import 'routes/routes_observers.dart';
 import 'utils/helpers/network_manager.dart';
+import 'utils/local_storage/storage_utility.dart';
 
 void main() async {
   // Ensure that widgets are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize GetX Local Storage
-  GetStorage.init();
+  await HLocalStorage.init("Floweres App");
 
   // Remove # sign from url
   setPathUrlStrategy();

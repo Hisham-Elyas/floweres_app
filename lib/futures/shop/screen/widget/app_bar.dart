@@ -30,16 +30,13 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
       actions: [
-        // const Spacer(),
-        Icon(Icons.search_outlined,
-            color: Theme.of(context).colorScheme.onSurface),
         SizedBox(width: 5.w),
         Icon(Icons.person_2_outlined,
             color: Theme.of(context).colorScheme.onSurface),
         IconButton(icon: Obx(() {
           return Badge(
             isLabelVisible: true,
-            label: Text("${cartController.cartItmes.length}"),
+            label: Text("${cartController.cartItems.length}"),
             child: Icon(Icons.shopping_cart_outlined,
                 color: Theme.of(context).colorScheme.onSurface),
           );

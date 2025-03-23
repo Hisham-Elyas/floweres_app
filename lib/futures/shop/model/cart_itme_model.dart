@@ -1,10 +1,10 @@
-class CartItmeModel {
+class CartItemModel {
   String productId;
   String productName;
   String productImageUrl;
   double price;
   int quantity;
-  CartItmeModel({
+  CartItemModel({
     required this.productId,
     this.productName = '',
     this.productImageUrl = '',
@@ -13,14 +13,14 @@ class CartItmeModel {
   });
   String get totalAmount => (price * quantity).toStringAsFixed(2);
 
-  CartItmeModel copyWith({
+  CartItemModel copyWith({
     String? productId,
     String? productName,
     String? productImageUrl,
     double? price,
     int? quantity,
   }) {
-    return CartItmeModel(
+    return CartItemModel(
       productId: productId ?? this.productId,
       productName: productName ?? this.productName,
       productImageUrl: productImageUrl ?? this.productImageUrl,
@@ -39,8 +39,8 @@ class CartItmeModel {
     };
   }
 
-  factory CartItmeModel.fromMap(Map<String, dynamic> map) {
-    return CartItmeModel(
+  factory CartItemModel.fromMap(Map<String, dynamic> map) {
+    return CartItemModel(
       productId: map['productId'] as String,
       productName: map['productName'] as String,
       productImageUrl: map['productImageUrl'] as String,
@@ -51,11 +51,11 @@ class CartItmeModel {
 
   @override
   String toString() {
-    return 'CartItmeModel(productId: $productId, productName: $productName, productImageUrl: $productImageUrl, price: $price, quantity: $quantity)';
+    return 'CartItemModel(productId: $productId, productName: $productName, productImageUrl: $productImageUrl, price: $price, quantity: $quantity)';
   }
 
   @override
-  bool operator ==(covariant CartItmeModel other) {
+  bool operator ==(covariant CartItemModel other) {
     if (identical(this, other)) return true;
 
     return other.productId == productId &&

@@ -192,7 +192,7 @@ class BottomSheetProdutsWidget extends StatelessWidget {
             ),
             onPressed: product.isActive
                 ? () {
-                    CartController.instance.addItmeToCart(product: product);
+                    CartController.instance.addItemToCart(product: product);
                   }
                 : null,
             child: Row(

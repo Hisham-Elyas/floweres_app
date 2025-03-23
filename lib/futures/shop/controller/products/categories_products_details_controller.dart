@@ -7,11 +7,12 @@ import '../../../../utils/popups/loaders.dart';
 import '../../model/products_model.dart';
 
 class CategoriesProductsDetailsController extends GetxController {
-  RxBool isLoading = true.obs;
+  RxBool isLoading = false.obs;
   static CategoriesProductsDetailsController get instance => Get.find();
   final RxList<ProductsModel> items = <ProductsModel>[].obs;
   final _productsRepo = Get.put(ProductsRepo());
   Future getProductByCategories({required String categoryId}) async {
+    isLoading.value = true;
     try {
       final newItems = await _productsRepo.getAllProductsByCategories(
           categoryId: categoryId);

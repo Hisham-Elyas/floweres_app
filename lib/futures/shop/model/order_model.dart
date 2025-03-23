@@ -7,7 +7,7 @@ class OrderModel {
   final DateTime orderDate;
   final String shippingAddress;
   final String paymentMethod;
-  final List<CartItmeModel> item;
+  final List<CartItemModel> item;
 
   OrderModel(
       {required this.id,

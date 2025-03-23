@@ -7,7 +7,9 @@ import 'package:iconsax/iconsax.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../../app_coloer.dart';
+import '../../../../../routes/routes.dart';
 import '../../../controller/cart/cart_controller.dart';
+import '../../../controller/products/categories_products_details_controller.dart';
 import '../../../controller/products/products_controller.dart';
 
 class ProductsSection extends StatelessWidget {
@@ -46,7 +48,15 @@ class ProductsSection extends StatelessWidget {
                     side: const BorderSide(
                         color: AppColor.secondaryColor, width: 1),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    final ctegoriesProductsDetailsController =
+                        Get.put(CategoriesProductsDetailsController());
+                    ctegoriesProductsDetailsController.items
+                        .assignAll(productsController.allItems);
+
+                    Get.toNamed(HRoutes.categories,
+                        arguments: "All Products For Test");
+                  },
                   child: Text("See All",
                       style: TextStyle(
                           color: AppColor.primaryColor,
@@ -222,7 +232,7 @@ class ProductItme extends StatelessWidget {
                 ),
                 onPressed: product.isActive
                     ? () {
-                        CartController.instance.addItmeToCart(product: product);
+                        CartController.instance.addItemToCart(product: product);
                       }
                     : null,
                 child: Row(

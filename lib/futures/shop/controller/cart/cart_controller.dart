@@ -1,36 +1,92 @@
 import 'package:floweres_app/futures/shop/model/products_model.dart';
 import 'package:get/get.dart';
 
+import '../../../../utils/local_storage/storage_utility.dart';
 import '../../../../utils/popups/loaders.dart';
 import '../../model/cart_itme_model.dart';
 
 class CartController extends GetxController {
   static CartController get instance => Get.find();
-  final RxList<CartItmeModel> cartItmes = <CartItmeModel>[].obs;
-  void addItmeToCart({required ProductsModel product}) {
-    final cartItme = CartItmeModel(
+  RxList<CartItemModel> cartItems = <CartItemModel>[].obs;
+  final _storage = HLocalStorage.instance();
+
+  String get totalAmountcartItems {
+    return cartItems
+        .fold(
+            0.0,
+            (previousValue, element) =>
+                previousValue + double.parse(element.totalAmount))
+        .toStringAsFixed(2);
+  }
+
+  void removeFromCart(String id) {
+    cartItems.removeWhere((item) => item.productId == id);
+    saveCart(); // Save cart after removing an item
+  }
+
+  void decrementQuantity(String id) {
+    int index = cartItems.indexWhere((item) => item.productId == id);
+    if (index != -1 && cartItems[index].quantity > 1) {
+      cartItems[index].quantity--;
+      cartItems.refresh(); // Refresh the list to update UI
+      saveCart(); // Save updated cart to local storage
+    }
+  }
+
+  void incrementQuantity(String id) {
+    int index = cartItems.indexWhere((item) => item.productId == id);
+    if (index != -1 && cartItems[index].quantity < 10) {
+      cartItems[index].quantity++;
+      cartItems.refresh(); // Refresh the list to update UI
+      saveCart(); // Save updated cart to local storage
+    }
+  }
+
+  void addItemToCart({required ProductsModel product}) {
+    int index = cartItems.indexWhere((item) => item.productId == product.id);
+
+    if (index != -1) {
+      // If the item is already in the cart, increase its quantity (max 10)
+      if (cartItems[index].quantity < 10) {
+        cartItems[index].quantity++;
+        cartItems.refresh(); // Refresh GetX state
+      }
+    } else {
+      // If the item is not in the cart, add it
+      final cartItem = CartItemModel(
         productId: product.id,
         quantity: 1,
         price: product.price,
         productImageUrl: product.imageUrl,
-        productName: product.name);
-    if (cartItmes.contains(cartItmes.firstWhere(
-      (element) => element.productId == cartItme.productId,
-      orElse: () => cartItme,
-    ))) {
-      final indexItme = cartItmes.indexWhere(
-        (element) {
-          return element.productId == cartItme.productId;
-        },
+        productName: product.name,
       );
-      if (cartItmes[indexItme].quantity < 10) {
-        cartItmes[indexItme].quantity++;
-      }
-    } else {
-      cartItmes.add(cartItme);
+      cartItems.add(cartItem);
     }
+
     HLoaders.hideSnackBar();
     Get.closeAllSnackbars();
-    HLoaders.successSnackBar(title: "Cart", message: "Add Itme To Cart ✅");
+    saveCart(); // Save updated cart
+
+    HLoaders.successSnackBar(title: "Cart", message: "Item Added to Cart ✅");
+  }
+
+  @override
+  void onInit() {
+    loadCart();
+    super.onInit();
+  }
+
+  void saveCart() {
+    List<Map<String, dynamic>> cartJson =
+        cartItems.map((item) => item.toMap()).toList();
+    _storage.writeData('CART', cartJson);
+  }
+
+  void loadCart() {
+    List<dynamic>? storedCart = _storage.readData<List<dynamic>>('CART');
+    if (storedCart != null) {
+      cartItems.assignAll(
+          storedCart.map((json) => CartItemModel.fromMap(json)).toList());
+    }
   }
 }

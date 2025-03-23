@@ -12,6 +12,7 @@ import '../../controller/products/products_controller.dart';
 import '../../model/products_model.dart';
 import '../widget/app_bar.dart';
 import '../widget/app_drawer.dart';
+import 'widget/breadcrumbs/breadcrumbs_with_heading.dart';
 
 class CategoriesProductsDetails extends StatelessWidget {
   const CategoriesProductsDetails({super.key});
@@ -21,8 +22,7 @@ class CategoriesProductsDetails extends StatelessWidget {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
     final ctegoriesProductsDetailsController =
         CategoriesProductsDetailsController.instance;
-    // ctegoriesProductsDetailsController.getProductByCategories(
-    //     categoryId: categoryId);
+    final String title = Get.arguments;
     return Scaffold(
       key: scaffoldKey,
       appBar: const MyAppBar(),
@@ -32,20 +32,29 @@ class CategoriesProductsDetails extends StatelessWidget {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : GridView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
-                itemCount: ctegoriesProductsDetailsController.items.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1,
-                  crossAxisSpacing: 1,
-                  mainAxisSpacing: 5,
-                ),
-                itemBuilder: (context, index) {
-                  final product =
-                      ctegoriesProductsDetailsController.items[index];
-                  return CategoriesProductItme(product: product);
-                },
+            : Column(
+                children: [
+                  HBreadcrumbsWithHeading(breadcrumbsItems: [title]),
+                  Expanded(
+                    child: GridView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      itemCount:
+                          ctegoriesProductsDetailsController.items.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1,
+                        crossAxisSpacing: 1,
+                        mainAxisSpacing: 5,
+                      ),
+                      itemBuilder: (context, index) {
+                        final product =
+                            ctegoriesProductsDetailsController.items[index];
+                        return CategoriesProductItme(product: product);
+                      },
+                    ),
+                  ),
+                ],
               );
       }),
     );
@@ -200,7 +209,7 @@ class CategoriesProductItme extends StatelessWidget {
                 ),
                 onPressed: product.isActive
                     ? () {
-                        CartController.instance.addItmeToCart(product: product);
+                        CartController.instance.addItemToCart(product: product);
                       }
                     : null,
                 child: Row(

@@ -75,9 +75,18 @@ class MyDrawer extends StatelessWidget {
                               categoryId:
                                   categoriesController.allItems[index].id,
                             );
-                            Get.toNamed(HRoutes.categories);
-                            // Get.toNamed(HRoutes.cart);
-                            scaffoldKey?.currentState?.closeDrawer();
+                            // Close the drawer before navigating
+                            if (scaffoldKey?.currentState?.isDrawerOpen ??
+                                false) {
+                              Get.back(); // Closes the drawer
+                            }
+
+                            // Navigate to the category screen while forcing argument updates
+                            Get.offAndToNamed(
+                              HRoutes.categories,
+                              arguments:
+                                  categoriesController.allItems[index].name,
+                            );
                           },
                         ),
                       );

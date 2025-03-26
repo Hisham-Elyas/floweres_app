@@ -5,14 +5,12 @@ import 'package:get/get.dart';
 import '../../../data/repositories/auth/auth_repo.dart';
 import '../../../data/repositories/auth/user_repo.dart';
 import '../../../utils/helpers/network_manager.dart';
-import '../../../utils/local_storage/storage_utility.dart';
 import '../../../utils/popups/loaders.dart';
 
 class SignUpController extends GetxController {
   final hidePassword = true.obs;
   final isLoading = false.obs;
   final remeberMe = false.obs;
-  final _storage = HLocalStorage.instance();
 
   final email = TextEditingController();
   final password = TextEditingController();
@@ -36,15 +34,17 @@ class SignUpController extends GetxController {
       final userdata = await AuthRepo.instance.signUpWithEmailAndPassword(
           email: email.text, password: password.text);
       final UserRepo userRepo = Get.put(UserRepo());
-      userRepo.createUser(
-          user: UserModel(
+      final newUser = UserModel(
         email: email.text.trim(),
         id: userdata.user!.uid,
         phoneNumber: phone.text.trim(),
         firstName: firstName.text.trim(),
         lastName: lastName.text.trim(),
         userName: firstName.text.trim(),
-      ));
+      );
+
+      userRepo.createUser(user: newUser);
+
       isLoading.value = false;
     } catch (e) {
       isLoading.value = false;

@@ -7,7 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../routes/routes.dart';
 import '../../../../utils/device/device_utility.dart';
-import '../../../auth/controller/auth_controller.dart';
+import '../../../auth/controller/profile_controller.dart';
 import '../../controller/cart/cart_controller.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -34,7 +34,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         SizedBox(width: 5.w),
         IconButton(
           onPressed: () {
-            final controler = Get.put(AuthController());
+            final controler = Get.put(ProfileController());
             controler.openProfile();
           },
           icon: Icon(Icons.person_2_outlined,

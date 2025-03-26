@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../controller/auth_controller.dart';
+import '../controller/profile_controller.dart';
 
 class ProfileContent extends StatelessWidget {
   const ProfileContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authController = Get.put(AuthController());
+    final authController = Get.put(ProfileController());
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(

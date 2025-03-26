@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../../../../../app_coloer.dart';
-import '../../../../auth/controller/auth_controller.dart';
+import '../../../../auth/controller/profile_controller.dart';
 import '../../../controller/cart/cart_controller.dart';
 import '../../../controller/cart/checkout_controller.dart';
 
@@ -26,7 +26,7 @@ class CheckoutScreen extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  Get.put(AuthController()).user.value.fullName,
+                  Get.put(ProfileController()).user.value.fullName,
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -115,7 +115,7 @@ class CheckoutScreen extends StatelessWidget {
             // Address Form (Only if Home Delivery is selected)
             Obx(() => controller.selectedDeliveryMethod.value == 1
                 ? _buildAddressForm(controller)
-                : Container()),
+                : _buildBranchDetails()),
 
             const SizedBox(height: 20),
 
@@ -128,6 +128,28 @@ class CheckoutScreen extends StatelessWidget {
                 child: const Text("تأكيد الطلب",
                     style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBranchDetails() {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            const ListTile(
+              leading: Icon(Iconsax.shop),
+              title: Text("فرع الرياض"),
+              subtitle: Text("مدة التجهيز: 2 ساعة\nالعنوان: KKKKKKKKKKKKKK"),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: const Text("تغيير الفرع"),
             ),
           ],
         ),
@@ -213,7 +235,9 @@ class CheckoutScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {}, // Save address logic
+                onPressed: () {
+                  controller.saveAddress();
+                }, // Save address logic
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.brown),
                 child: const Text("حفظ", style: TextStyle(color: Colors.white)),
               ),

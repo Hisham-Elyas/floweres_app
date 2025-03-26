@@ -9,16 +9,20 @@ import '../../shop/model/user_model.dart';
 import '../widget/login_widget.dart';
 import '../widget/profile_content.dart';
 
-class AuthController extends GetxController {
-  static AuthController get instance => Get.find();
+class ProfileController extends GetxController {
+  static ProfileController get instance => Get.find();
   final isLoading = false.obs;
   Rx<UserModel> user = UserModel.empty().obs;
+  @override
+  void onInit() {
+    _loadUserInfo();
+    super.onInit();
+  }
 
   openProfile() async {
     if (AuthRepo.instance.isAuthenticated) {
       ///  open Profile
       HBottomSheet.openBottomSheet(child: const ProfileContent());
-      await fetchUserDetails();
     } else {
       ///  open Login
       HBottomSheet.openBottomSheet(
@@ -28,7 +32,17 @@ class AuthController extends GetxController {
     }
   }
 
-  fetchUserDetails() async {
+  _loadUserInfo() {
+    final userRepo = Get.put(UserRepo());
+    UserModel? saveUser = userRepo.loadUserInfo();
+    if (saveUser == null) {
+      _fetchUserDetails();
+    } else {
+      user.value = saveUser;
+    }
+  }
+
+  _fetchUserDetails() async {
     try {
       isLoading.value = true;
       final isConnected = await NetworkManager.instance.isConnected();
@@ -48,6 +62,8 @@ class AuthController extends GetxController {
   signOut() async {
     try {
       await AuthRepo.instance.signOut();
+      final userRepo = Get.put(UserRepo());
+      userRepo.removeUserInfo();
       Get.back();
     } catch (e) {
       HLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());

@@ -129,4 +129,35 @@ class UserModel {
         createdAt.hashCode ^
         updatedAt.hashCode;
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'firstName': firstName,
+      'lastName': lastName,
+      'userName': userName,
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'role': role.name, // Convert Enum to String
+      'createdAt': createdAt?.toIso8601String(), // Convert DateTime to String
+      'updatedAt': updatedAt?.toIso8601String(),
+    };
+  }
+
+  // Convert JSON to UserModel (for GetStorage)
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      firstName: json['firstName'] ?? '',
+      lastName: json['lastName'] ?? '',
+      userName: json['userName'] ?? '',
+      email: json['email'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? '',
+      role: AppRole.values.byName(json['role'] ?? AppRole.user.name),
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+    );
+  }
 }

@@ -12,11 +12,21 @@ class CheckoutController extends GetxController {
   var selectedCity = "الرياض".obs;
   var selectedDeliveryMethod = 1.obs; // 1: Home Delivery, 2: Branch Pickup
 
+  /// Fake apply coupon logic
   void applyCoupon() {
-    // Add logic to apply the coupon
+    // Add your coupon logic here
+    Get.snackbar("Coupon", "تم تطبيق الكوبون بنجاح (مثال)");
   }
 
+  /// Fake confirm order logic
   void confirmOrder() {
-    // Add logic to confirm the order
+    // Add your order confirmation logic here
+    Get.snackbar("Order", "تم تأكيد الطلب بنجاح (مثال)");
+  }
+
+  /// Save address logic
+  void saveAddress() {
+    // Save address to user profile or any backend
+    Get.snackbar("Address", "تم حفظ العنوان بنجاح (مثال)");
   }
 }

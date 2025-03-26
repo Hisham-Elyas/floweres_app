@@ -15,7 +15,7 @@ class HAppTheme {
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
-    fontFamily: 'Urbanist',
+    fontFamily: 'Cairo',
     disabledColor: HColors.grey,
     brightness: Brightness.light,
     primaryColor: HColors.primary,
@@ -32,7 +32,7 @@ class HAppTheme {
 
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
-    fontFamily: 'Urbanist',
+    fontFamily: 'Cairo',
     disabledColor: HColors.grey,
     brightness: Brightness.dark,
     primaryColor: HColors.primary,

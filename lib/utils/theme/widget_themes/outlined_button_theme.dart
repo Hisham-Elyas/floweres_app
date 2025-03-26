@@ -21,7 +21,7 @@ class HOutlinedButtonTheme {
           fontSize: 16,
           color: HColors.black,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Urbanist'),
+          fontFamily: 'Cairo'),
     ),
   );
 
@@ -38,7 +38,7 @@ class HOutlinedButtonTheme {
           fontSize: 16,
           color: HColors.textWhite,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Urbanist'),
+          fontFamily: 'Cairo'),
     ),
   );
 }

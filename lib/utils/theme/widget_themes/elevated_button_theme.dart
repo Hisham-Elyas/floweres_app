@@ -23,7 +23,7 @@ class HElevatedButtonTheme {
           fontSize: 16,
           color: HColors.textWhite,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Urbanist'),
+          fontFamily: 'Cairo'),
     ),
   );
 
@@ -43,7 +43,7 @@ class HElevatedButtonTheme {
           fontSize: 16,
           color: HColors.textWhite,
           fontWeight: FontWeight.w600,
-          fontFamily: 'Urbanist'),
+          fontFamily: 'Cairo'),
     ),
   );
 }

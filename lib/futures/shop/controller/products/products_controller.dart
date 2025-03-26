@@ -8,6 +8,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../app_coloer.dart';
 import '../../../../data/abstract/base_data_controller.dart';
 import '../../../../data/repositories/products/products_repo.dart';
+import '../../../../utils/popups/bottom_sheet.dart';
 import '../../model/products_model.dart';
 import '../cart/cart_controller.dart';
 
@@ -26,8 +27,8 @@ class ProductsController extends HBaseDataController<ProductsModel> {
   }
 
   void showProductDestils({required ProductsModel product}) {
-    Get.bottomSheet(
-      BottomSheetProdutsWidget(product: product),
+    HBottomSheet.openBottomSheet(
+      child: BottomSheetProdutsWidget(product: product),
       isScrollControlled: true,
     );
   }
@@ -45,6 +46,10 @@ class BottomSheetProdutsWidget extends StatelessWidget {
     return Scaffold(
       body: Container(
         // width: 200.h,
+        //  padding:  EdgeInsets.only(
+        //   bottom:
+        //       MediaQuery.of(context).viewInsets.bottom, // Adjust for keyboard
+        // ),
 
         decoration: BoxDecoration(
             // color: AppColor.,

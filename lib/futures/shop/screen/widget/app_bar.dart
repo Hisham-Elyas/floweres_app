@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../routes/routes.dart';
 import '../../../../utils/device/device_utility.dart';
+import '../../../auth/controller/auth_controller.dart';
 import '../../controller/cart/cart_controller.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -31,8 +32,14 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         SizedBox(width: 5.w),
-        Icon(Icons.person_2_outlined,
-            color: Theme.of(context).colorScheme.onSurface),
+        IconButton(
+          onPressed: () {
+            final controler = Get.put(AuthController());
+            controler.openProfile();
+          },
+          icon: Icon(Icons.person_2_outlined,
+              color: Theme.of(context).colorScheme.onSurface),
+        ),
         IconButton(icon: Obx(() {
           return Badge(
             isLabelVisible: true,

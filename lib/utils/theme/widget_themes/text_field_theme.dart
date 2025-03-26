@@ -14,15 +14,15 @@ class HTextFormFieldTheme {
     labelStyle: const TextStyle().copyWith(
         fontSize: HSizes.fontSizeMd,
         color: HColors.textPrimary,
-        fontFamily: 'Urbanist'),
+        fontFamily: 'Cairo'),
     hintStyle: const TextStyle().copyWith(
         fontSize: HSizes.fontSizeSm,
         color: HColors.textSecondary,
-        fontFamily: 'Urbanist'),
+        fontFamily: 'Cairo'),
     errorStyle: const TextStyle()
-        .copyWith(fontStyle: FontStyle.normal, fontFamily: 'Urbanist'),
+        .copyWith(fontStyle: FontStyle.normal, fontFamily: 'Cairo'),
     floatingLabelStyle: const TextStyle()
-        .copyWith(color: HColors.textSecondary, fontFamily: 'Urbanist'),
+        .copyWith(color: HColors.textSecondary, fontFamily: 'Cairo'),
     border: const OutlineInputBorder().copyWith(
       borderRadius: BorderRadius.circular(HSizes.inputFieldRadius),
       borderSide: const BorderSide(width: 1, color: HColors.borderPrimary),
@@ -51,15 +51,11 @@ class HTextFormFieldTheme {
     suffixIconColor: HColors.darkGrey,
     // constraints: const BoxConstraints.expand(height: HSizes.inputFieldHeight),
     labelStyle: const TextStyle().copyWith(
-        fontSize: HSizes.fontSizeMd,
-        color: HColors.white,
-        fontFamily: 'Urbanist'),
+        fontSize: HSizes.fontSizeMd, color: HColors.white, fontFamily: 'Cairo'),
     hintStyle: const TextStyle().copyWith(
-        fontSize: HSizes.fontSizeSm,
-        color: HColors.white,
-        fontFamily: 'Urbanist'),
-    floatingLabelStyle: const TextStyle().copyWith(
-        color: HColors.white.withOpacity(0.8), fontFamily: 'Urbanist'),
+        fontSize: HSizes.fontSizeSm, color: HColors.white, fontFamily: 'Cairo'),
+    floatingLabelStyle: const TextStyle()
+        .copyWith(color: HColors.white.withOpacity(0.8), fontFamily: 'Cairo'),
     border: const OutlineInputBorder().copyWith(
       borderRadius: BorderRadius.circular(HSizes.inputFieldRadius),
       borderSide: const BorderSide(width: 1, color: HColors.darkGrey),

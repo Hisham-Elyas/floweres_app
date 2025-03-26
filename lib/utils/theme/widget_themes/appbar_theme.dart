@@ -19,7 +19,7 @@ class HAppBarTheme {
         fontSize: 18.0,
         fontWeight: FontWeight.w600,
         color: HColors.black,
-        fontFamily: 'Urbanist'),
+        fontFamily: 'Cairo'),
   );
   static const darkAppBarTheme = AppBarTheme(
     elevation: 0,
@@ -33,6 +33,6 @@ class HAppBarTheme {
         fontSize: 18.0,
         fontWeight: FontWeight.w600,
         color: HColors.white,
-        fontFamily: 'Urbanist'),
+        fontFamily: 'Cairo'),
   );
 }

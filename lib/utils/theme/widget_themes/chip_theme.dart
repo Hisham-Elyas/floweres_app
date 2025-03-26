@@ -10,7 +10,7 @@ class HChipTheme {
     selectedColor: HColors.primary,
     disabledColor: HColors.grey.withOpacity(0.4),
     padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12),
-    labelStyle: const TextStyle(color: HColors.black, fontFamily: 'Urbanist'),
+    labelStyle: const TextStyle(color: HColors.black, fontFamily: 'Cairo'),
   );
 
   static ChipThemeData darkChipTheme = const ChipThemeData(
@@ -18,6 +18,6 @@ class HChipTheme {
     selectedColor: HColors.primary,
     disabledColor: HColors.darkerGrey,
     padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 12),
-    labelStyle: TextStyle(color: HColors.white, fontFamily: 'Urbanist'),
+    labelStyle: TextStyle(color: HColors.white, fontFamily: 'Cairo'),
   );
 }

@@ -1,16 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../utils/local_storage/storage_utility.dart';
+import '../../model/address_model.dart';
+
 class CheckoutController extends GetxController {
+  final _storage = HLocalStorage.instance();
   var couponController = TextEditingController();
+
+  // Form controllers
+  var selectedCountry = "السعودية".obs;
+  var selectedCity = "الرياض".obs;
   var streetController = TextEditingController();
   var districtController = TextEditingController();
   var houseDescController = TextEditingController();
   var postalCodeController = TextEditingController();
 
-  var selectedCountry = "السعودية".obs;
-  var selectedCity = "الرياض".obs;
+  final RxList<Address> addresses = <Address>[].obs;
+  final Rx<Address?> selectedAddress = Rx<Address?>(null);
+  final RxString selectedAddressId = ''.obs;
+  final Rx<CheckoutState> state = CheckoutState.add.obs;
+  final RxBool isEditing = false.obs;
+  Address? editingAddress;
+
   var selectedDeliveryMethod = 1.obs; // 1: Home Delivery, 2: Branch Pickup
+
+  @override
+  void onInit() {
+    loadAddresses();
+    if (addresses.isNotEmpty) {
+      state.value = CheckoutState.select;
+    }
+    super.onInit();
+  }
+
+  void saveAddresses() {
+    List<Map<String, dynamic>> cartJson =
+        addresses.map((item) => item.toMap()).toList();
+    _storage.writeData('ADDRESSES', cartJson);
+  }
+
+  void loadAddresses() {
+    List<dynamic>? storedAddresses =
+        _storage.readData<List<dynamic>>('ADDRESSES');
+    if (storedAddresses != null) {
+      addresses.assignAll(
+          storedAddresses.map((json) => Address.fromMap(json)).toList());
+    }
+  }
+
+  void selectAddress(Address address) {
+    selectedAddress.value = address;
+    selectedAddressId.value = address.id;
+  }
+
+  bool isSelected(Address address) {
+    return selectedAddressId.value == address.id;
+  }
 
   /// Fake apply coupon logic
   void applyCoupon() {
@@ -24,9 +70,81 @@ class CheckoutController extends GetxController {
     Get.snackbar("Order", "تم تأكيد الطلب بنجاح (مثال)");
   }
 
-  /// Save address logic
+  addNewAddress() {
+    state.value = CheckoutState.add;
+  }
+
+  void initForm(Address? address) {
+    if (address != null) {
+      selectedCountry.value = address.country;
+      selectedCity.value = address.city;
+      streetController.text = address.street;
+      districtController.text = address.district;
+      houseDescController.text = address.houseDesc;
+      postalCodeController.text = address.postalCode;
+      state.value = CheckoutState.editing;
+      isEditing.value = false;
+      editingAddress = address;
+    }
+  }
+
   void saveAddress() {
-    // Save address to user profile or any backend
-    Get.snackbar("Address", "تم حفظ العنوان بنجاح (مثال)");
+    final address = Address(
+      id: editingAddress?.id ?? DateTime.now().toIso8601String(),
+      city: selectedCity.value,
+      country: selectedCountry.value,
+      district: districtController.text,
+      street: streetController.text,
+      houseDesc: houseDescController.text,
+      postalCode: postalCodeController.text,
+    );
+
+    if (isEditing.value) {
+      final index = addresses.indexWhere((a) => a.id == address.id);
+      addresses[index] = address;
+    } else {
+      addresses.add(address);
+    }
+
+    clearForm();
+    state.value = CheckoutState.select;
+    saveAddresses();
+    Get.snackbar(
+      'تم الحفظ',
+      'تم حفظ العنوان بنجاح',
+    );
+  }
+
+  void deleteAddress(String id) {
+    addresses.removeWhere((a) => a.id == id);
+    Get.snackbar(
+      'تم الحذف',
+      'تم حذف العنوان بنجاح',
+    );
+    if (addresses.isEmpty) {
+      state.value = CheckoutState.add;
+    }
+  }
+
+  void clearForm() {
+    streetController.clear();
+    districtController.clear();
+    houseDescController.clear();
+    postalCodeController.clear();
+
+    isEditing.value = false;
+    editingAddress = null;
+  }
+
+  void confirmAddress() {
+    if (selectedAddress.value == null) {
+      Get.snackbar(
+        'خطأ',
+        'يرجى اختيار عنوان أولاً',
+      );
+      return;
+    }
   }
 }
+
+enum CheckoutState { add, editing, select }

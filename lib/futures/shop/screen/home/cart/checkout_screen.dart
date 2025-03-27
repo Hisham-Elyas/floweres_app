@@ -7,6 +7,7 @@ import '../../../../../app_coloer.dart';
 import '../../../../auth/controller/profile_controller.dart';
 import '../../../controller/cart/cart_controller.dart';
 import '../../../controller/cart/checkout_controller.dart';
+import '../../../model/address_model.dart';
 
 class CheckoutScreen extends StatelessWidget {
   final CheckoutController controller = Get.put(CheckoutController());
@@ -63,17 +64,17 @@ class CheckoutScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    TextField(
-                      controller: controller.couponController,
-                      decoration: InputDecoration(
-                        labelText: "أدخل رمز الكوبون",
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Iconsax.discount_shape),
-                          onPressed: controller.applyCoupon,
-                        ),
-                      ),
-                    ),
+                    // TextField(
+                    //   controller: controller.couponController,
+                    //   decoration: InputDecoration(
+                    //     labelText: "أدخل رمز الكوبون",
+                    //     border: const OutlineInputBorder(),
+                    //     suffixIcon: IconButton(
+                    //       icon: const Icon(Iconsax.discount_shape),
+                    //       onPressed: controller.applyCoupon,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -81,54 +82,75 @@ class CheckoutScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Shipping Address Section
-            const Text("عنوان الشحن",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-
-            // Shipping Method Selection
-            Obx(() => Row(
+            Card(
+              elevation: 2,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 20.h),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: RadioListTile<int>(
-                        value: 1,
-                        groupValue: controller.selectedDeliveryMethod.value,
-                        onChanged: (value) =>
-                            controller.selectedDeliveryMethod.value = value!,
-                        title: const Text("توصيل"),
+                    // Shipping Address Section
+                    Padding(
+                      padding: EdgeInsets.only(right: 15.w),
+                      child: const Align(
+                        alignment: Alignment.centerRight,
+                        child: Text("عنوان الشحن",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ),
-                    Expanded(
-                      child: RadioListTile<int>(
-                        value: 2,
-                        groupValue: controller.selectedDeliveryMethod.value,
-                        onChanged: (value) =>
-                            controller.selectedDeliveryMethod.value = value!,
-                        title: const Text("إستلام من الفرع"),
+                    const SizedBox(height: 10),
+
+                    // Shipping Method Selection
+                    Obx(() => Row(
+                          children: [
+                            Expanded(
+                              child: RadioListTile<int>(
+                                value: 1,
+                                activeColor: AppColor.primaryColor,
+                                groupValue:
+                                    controller.selectedDeliveryMethod.value,
+                                onChanged: (value) => controller
+                                    .selectedDeliveryMethod.value = value!,
+                                title: const Text("توصيل"),
+                              ),
+                            ),
+                            Expanded(
+                              child: RadioListTile<int>(
+                                value: 2,
+                                activeColor: AppColor.primaryColor,
+                                groupValue:
+                                    controller.selectedDeliveryMethod.value,
+                                onChanged: (value) => controller
+                                    .selectedDeliveryMethod.value = value!,
+                                title: const Text("إستلام من الفرع"),
+                              ),
+                            ),
+                          ],
+                        )),
+
+                    const SizedBox(height: 10),
+
+                    // Address Form (Only if Home Delivery is selected)
+                    Obx(() => controller.selectedDeliveryMethod.value == 1
+                        ? _buildAddress(controller)
+                        : _buildBranchDetails()),
+
+                    const SizedBox(height: 20),
+
+                    // Confirm Order Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: controller.confirmOrder,
+                        child: const Text("تأكيد الطلب",
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.white)),
                       ),
                     ),
                   ],
-                )),
-
-            const SizedBox(height: 10),
-
-            // Address Form (Only if Home Delivery is selected)
-            Obx(() => controller.selectedDeliveryMethod.value == 1
-                ? _buildAddressForm(controller)
-                : _buildBranchDetails()),
-
-            const SizedBox(height: 20),
-
-            // Confirm Order Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: controller.confirmOrder,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.brown),
-                child: const Text("تأكيد الطلب",
-                    style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -136,24 +158,38 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   Widget _buildBranchDetails() {
-    return Card(
+    return const Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         child: Column(
           children: [
-            const ListTile(
+            ListTile(
               leading: Icon(Iconsax.shop),
               title: Text("فرع الرياض"),
               subtitle: Text("مدة التجهيز: 2 ساعة\nالعنوان: KKKKKKKKKKKKKK"),
             ),
-            TextButton(
-              onPressed: () {},
-              child: const Text("تغيير الفرع"),
-            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAddress(CheckoutController controller) {
+    return Obx(
+      () {
+        switch (controller.state.value) {
+          case CheckoutState.add:
+            return _buildAddressForm(controller);
+          case CheckoutState.editing:
+            return _buildAddressForm(controller);
+          case CheckoutState.select:
+            return _buildSelectAddress(controller);
+
+          default:
+            return _buildAddressForm(controller);
+        }
+      },
     );
   }
 
@@ -163,12 +199,34 @@ class CheckoutScreen extends StatelessWidget {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("إضافة عنوان جديد",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (controller.addresses.isNotEmpty)
+                  IconButton(
+                    onPressed: () {
+                      controller.state.value = CheckoutState.select;
+                      controller.clearForm();
+                    },
+                    icon: Icon(
+                      Iconsax.close_circle,
+                      size: 32.dm,
+                      color: AppColor.emptyColor,
+                    ),
+                  ),
+                const Spacer(),
+                Padding(
+                  padding: EdgeInsets.only(right: 15.w),
+                  child: const Text("إضافة عنوان جديد",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
             const SizedBox(height: 10),
 
             // Country Dropdown
@@ -238,7 +296,7 @@ class CheckoutScreen extends StatelessWidget {
                 onPressed: () {
                   controller.saveAddress();
                 }, // Save address logic
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.brown),
+
                 child: const Text("حفظ", style: TextStyle(color: Colors.white)),
               ),
             ),
@@ -246,5 +304,111 @@ class CheckoutScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildSelectAddress(CheckoutController controller) {
+    return Obx(() => Column(
+          children: [
+            SizedBox(
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: controller.addresses.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (context, index) {
+                  final address = controller.addresses[index];
+                  return AddressTile(
+                    address: address,
+                    onEdit: () => controller.initForm(address),
+                    onDelete: () => controller.deleteAddress(address.id),
+                    onSelect: () => controller.selectAddress(address),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: controller.addNewAddress,
+                child: const Text(
+                  "إضافة عنوان جديد",
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+}
+
+// AddressTile widget with radio selection
+class AddressTile extends StatelessWidget {
+  final Address address;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback onSelect;
+
+  const AddressTile({
+    super.key,
+    required this.address,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final controller = Get.find<CheckoutController>();
+      final isSelected = controller.isSelected(address);
+      return GestureDetector(
+        onTap: onSelect,
+        child: Card(
+          elevation: 2,
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: isSelected
+                ? const BorderSide(
+                    color: AppColor.primaryColor,
+                    width: 1,
+                  )
+                : BorderSide.none,
+          ),
+          child: Row(
+            children: [
+              Radio<String>(
+                value: address.id,
+                groupValue: controller.selectedAddress.value?.id,
+                onChanged: (String? value) => onSelect(),
+                activeColor: AppColor.primaryColor,
+              ),
+              Text(
+                "${address.country} - ${address.city} - ${address.street}- ${address.district}",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? AppColor.primaryColor : Colors.black,
+                ),
+              ),
+              const Spacer(),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Iconsax.edit_2),
+                    onPressed: onEdit,
+                  ),
+                  IconButton(
+                    icon:
+                        const Icon(Iconsax.trash4, color: AppColor.emptyColor),
+                    onPressed: onDelete,
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      );
+    });
   }
 }

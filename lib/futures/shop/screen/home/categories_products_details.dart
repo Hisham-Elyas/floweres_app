@@ -8,6 +8,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../app_coloer.dart';
 import '../../controller/cart/cart_controller.dart';
 import '../../controller/products/categories_products_details_controller.dart';
+import '../../controller/products/favorites_controller.dart';
 import '../../controller/products/products_controller.dart';
 import '../../model/products_model.dart';
 import '../widget/app_bar.dart';
@@ -106,7 +107,7 @@ class CategoriesProductItme extends StatelessWidget {
                               ),
                             ),
                             errorWidget: (context, url, error) =>
-                                const Center(child: Icon(Icons.error)),
+                                Center(child: Icon(Icons.error, size: 60.dm)),
                           )),
                     ),
                   ),
@@ -115,19 +116,32 @@ class CategoriesProductItme extends StatelessWidget {
                     right: 5,
                     child: Column(
                       children: [
-                        Container(
-                            height: 40.dm,
-                            width: 40.dm,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    width: 0.8, color: AppColor.primaryColor),
-                                color: Colors.white),
-                            child: Icon(
-                              Icons.favorite_border,
-                              size: 20.dm,
-                            )),
+                        Obx(() {
+                          final favoritesController =
+                              Get.put(FavoritesController());
+                          return GestureDetector(
+                            onTap: () {
+                              favoritesController.toggleFavorite(product);
+                            },
+                            child: Container(
+                                height: 40.dm,
+                                width: 40.dm,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 0.8,
+                                        color: AppColor.primaryColor),
+                                    color: Colors.white),
+                                child: Icon(
+                                  favoritesController.isFavorite(product)
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  size: 20.dm,
+                                  color: AppColor.primaryColor,
+                                )),
+                          );
+                        }),
                         SizedBox(height: 10.h),
                         Container(
                             height: 40.dm,

@@ -1,9 +1,13 @@
 import 'package:floweres_app/futures/shop/model/products_model.dart';
 import 'package:get/get.dart';
 
+import '../../../../data/repositories/auth/auth_repo.dart';
 import '../../../../utils/local_storage/storage_utility.dart';
+import '../../../../utils/popups/bottom_sheet.dart';
 import '../../../../utils/popups/loaders.dart';
+import '../../../auth/widget/login_widget.dart';
 import '../../model/cart_itme_model.dart';
+import '../../screen/home/cart/checkout_screen.dart';
 
 class CartController extends GetxController {
   static CartController get instance => Get.find();
@@ -87,6 +91,22 @@ class CartController extends GetxController {
     if (storedCart != null) {
       cartItems.assignAll(
           storedCart.map((json) => CartItemModel.fromMap(json)).toList());
+    }
+  }
+
+  goToCheckoutScreen() async {
+    if (AuthRepo.instance.isAuthenticated) {
+      Get.to(() => CheckoutScreen());
+    } else {
+      ///  open Login
+      HBottomSheet.openBottomSheet(
+        isScrollControlled: true,
+        child: const LoginWidget(),
+      );
+      Get.snackbar(
+        "❌ تسجيل الدخول",
+        "قم بتسجيل الدخول اولا",
+      );
     }
   }
 }

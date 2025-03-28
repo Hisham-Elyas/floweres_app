@@ -11,6 +11,7 @@ import '../../../../data/repositories/products/products_repo.dart';
 import '../../../../utils/popups/bottom_sheet.dart';
 import '../../model/products_model.dart';
 import '../cart/cart_controller.dart';
+import 'favorites_controller.dart';
 
 class ProductsController extends HBaseDataController<ProductsModel> {
   static ProductsController get instance => Get.find();
@@ -77,7 +78,7 @@ class BottomSheetProdutsWidget extends StatelessWidget {
                           ),
                         ),
                         errorWidget: (context, url, error) =>
-                            const Center(child: Icon(Icons.error)),
+                            Center(child: Icon(Icons.error, size: 60.dm)),
                       )),
                 ),
               ),
@@ -88,11 +89,20 @@ class BottomSheetProdutsWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Iconsax.heart,
-                    size: 28.dm,
-                    color: AppColor.primaryColor,
-                  ),
+                  Obx(() {
+                    final favoritesController = Get.put(FavoritesController());
+                    return GestureDetector(
+                        onTap: () {
+                          favoritesController.toggleFavorite(product);
+                        },
+                        child: Icon(
+                          favoritesController.isFavorite(product)
+                              ? Iconsax.heart5
+                              : Iconsax.heart,
+                          size: 32.dm,
+                          color: AppColor.primaryColor,
+                        ));
+                  }),
                   SizedBox(height: 15.h),
                   Text(product.name,
                       maxLines: 1,

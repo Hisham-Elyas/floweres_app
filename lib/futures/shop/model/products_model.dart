@@ -91,4 +91,27 @@ class ProductsModel {
         detail: '',
         price: 0,
       );
+  // Convert ProductModel to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'imageUrl': imageUrl,
+      'isActive': isActive,
+      'price': price,
+      'detail': detail,
+    };
+  }
+
+  // Create a ProductModel from JSON
+  factory ProductsModel.fromJson(Map<String, dynamic> json) {
+    return ProductsModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      imageUrl: json['imageUrl'] as String,
+      isActive: json['isActive'] as bool,
+      price: (json['price'] as num).toDouble(),
+      detail: json['detail'] as String,
+    );
+  }
 }

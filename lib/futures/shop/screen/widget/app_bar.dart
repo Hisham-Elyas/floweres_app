@@ -28,7 +28,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
           enabled: true,
           child: Skeleton.shade(child: Icon(Iconsax.image, size: 50.dm)),
         ),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
+        errorWidget: (context, url, error) => Icon(Icons.error, size: 50.dm),
       ),
       actions: [
         SizedBox(width: 5.w),

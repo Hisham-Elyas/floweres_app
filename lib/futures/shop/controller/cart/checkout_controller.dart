@@ -24,6 +24,25 @@ class CheckoutController extends GetxController {
   Address? editingAddress;
 
   var selectedDeliveryMethod = 1.obs; // 1: Home Delivery, 2: Branch Pickup
+  // Add in CheckoutController
+  var selectedPaymentMethod = 'mada'.obs;
+
+  void selectPaymentMethod(String method) {
+    selectedPaymentMethod.value = method;
+  }
+
+  // Add to CheckoutController
+  final RxString selectedShippingCompany = ''.obs;
+  final shippingNotesController = TextEditingController();
+
+  void confirmShipping() {
+    if (selectedShippingCompany.isEmpty) {
+      Get.snackbar("خطأ", "يرجى اختيار شركة شحن");
+      return;
+    }
+    // Handle shipping confirmation logic
+    Get.snackbar("تم التأكيد", "تم تأكيد شركة الشحن بنجاح");
+  }
 
   @override
   void onInit() {

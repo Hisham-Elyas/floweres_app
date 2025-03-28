@@ -58,7 +58,7 @@ class BannerSection extends StatelessWidget {
                           ),
                         ),
                         errorWidget: (context, url, error) =>
-                            const Center(child: Icon(Icons.error)),
+                            Center(child: Icon(Icons.error, size: 60.dm)),
                       ),
                     ),
                   );

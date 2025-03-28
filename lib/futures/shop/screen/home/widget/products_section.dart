@@ -10,6 +10,7 @@ import '../../../../../app_coloer.dart';
 import '../../../../../routes/routes.dart';
 import '../../../controller/cart/cart_controller.dart';
 import '../../../controller/products/categories_products_details_controller.dart';
+import '../../../controller/products/favorites_controller.dart';
 import '../../../controller/products/products_controller.dart';
 
 class ProductsSection extends StatelessWidget {
@@ -129,7 +130,7 @@ class ProductItme extends StatelessWidget {
                               ),
                             ),
                             errorWidget: (context, url, error) =>
-                                const Center(child: Icon(Icons.error)),
+                                Center(child: Icon(Icons.error, size: 60.dm)),
                           )),
                     ),
                   ),
@@ -138,46 +139,60 @@ class ProductItme extends StatelessWidget {
                     right: 5,
                     child: Column(
                       children: [
-                        Container(
+                        Obx(() {
+                          final favoritesController =
+                              Get.put(FavoritesController());
+                          return GestureDetector(
+                            onTap: () {
+                              favoritesController.toggleFavorite(product);
+                            },
+                            child: Container(
+                                height: 40.dm,
+                                width: 40.dm,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        width: 0.8,
+                                        color: AppColor.primaryColor),
+                                    color: Colors.white),
+                                child: Icon(
+                                  favoritesController.isFavorite(product)
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  size: 20.dm,
+                                  color: AppColor.primaryColor,
+                                )),
+                          );
+                        }),
+                        SizedBox(height: 10.h),
+                        GestureDetector(
+                          onTap: () {
+                            productsController.showProductDestils(
+                                product: product);
+                          },
+                          child: Container(
                             height: 40.dm,
                             width: 40.dm,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                                shape: BoxShape.circle,
                                 border: Border.all(
                                     width: 0.8, color: AppColor.primaryColor),
+                                shape: BoxShape.circle,
                                 color: Colors.white),
                             child: Icon(
-                              Icons.favorite_border,
+                              Icons.remove_red_eye_outlined,
                               size: 20.dm,
-                            )),
-                        SizedBox(height: 10.h),
-                        Container(
-                            height: 40.dm,
-                            width: 40.dm,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 0.8, color: AppColor.primaryColor),
-                                shape: BoxShape.circle,
-                                color: Colors.white),
-                            child: GestureDetector(
-                              onTap: () {
-                                productsController.showProductDestils(
-                                    product: product);
-                              },
-                              child: Icon(
-                                Icons.remove_red_eye_outlined,
-                                size: 20.dm,
-                              ),
-                            )),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   if (!product.isActive)
                     Positioned.fill(
                       child: Container(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withOpacity(0.4),
                         child: Center(
                           child: Transform.rotate(
                             angle: -0.5,
@@ -186,16 +201,16 @@ class ProductItme extends StatelessWidget {
                                   horizontal: 10, vertical: 5),
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  width: 0.8,
+                                  width: 1.2,
                                   color: AppColor.emptyColor,
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Text(
+                              child: Text(
                                 "نفدت الكمية",
                                 style: TextStyle(
                                   color: AppColor.emptyColor,
-                                  fontSize: 16,
+                                  fontSize: 24.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

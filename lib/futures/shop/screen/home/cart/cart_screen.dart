@@ -10,7 +10,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../../app_coloer.dart';
 import '../../../controller/cart/cart_controller.dart';
 import '../../widget/app_bar.dart';
-import 'checkout_screen.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -69,7 +68,7 @@ class CartScreen extends StatelessWidget {
                         backgroundColor: AppColor.primaryColor,
                       ),
                       onPressed: () {
-                        Get.to(() => CheckoutScreen());
+                        cartController.goToCheckoutScreen();
                       },
                       child: Text(
                         "اتمام الطلب",
@@ -132,7 +131,7 @@ class CartItemWidget extends StatelessWidget {
                               ),
                             ),
                             errorWidget: (context, url, error) =>
-                                const Center(child: Icon(Icons.error)),
+                                Center(child: Icon(Icons.error, size: 100.dm)),
                           )),
                     ),
                   ),

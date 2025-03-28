@@ -42,7 +42,8 @@ class MyDrawer extends StatelessWidget {
                     child:
                         Skeleton.shade(child: Icon(Iconsax.image, size: 60.dm)),
                   ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  errorWidget: (context, url, error) =>
+                      Icon(Icons.error, size: 60.dm),
                 ),
               ),
               const SizedBox(height: HSizes.spaceBtwItems),

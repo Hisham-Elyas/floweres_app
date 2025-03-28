@@ -58,9 +58,9 @@ class CheckoutScreen extends StatelessWidget {
                               color: AppColor.primaryColor,
                               fontWeight: FontWeight.w900,
                             )),
-                        const Text("إجمالي الطلب",
+                        Text("إجمالي الطلب",
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                                fontSize: 24.sp, fontWeight: FontWeight.bold)),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -82,6 +82,8 @@ class CheckoutScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
+            ///  addresses  1
+
             Card(
               elevation: 2,
               child: Padding(
@@ -91,11 +93,11 @@ class CheckoutScreen extends StatelessWidget {
                     // Shipping Address Section
                     Padding(
                       padding: EdgeInsets.only(right: 15.w),
-                      child: const Align(
+                      child: Align(
                         alignment: Alignment.centerRight,
                         child: Text("عنوان الشحن",
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                                fontSize: 24.sp, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -142,19 +144,295 @@ class CheckoutScreen extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: controller.confirmOrder,
-                        child: const Text("تأكيد الطلب",
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.white)),
+                        child: Text("تأكيد العنوان",
+                            style: TextStyle(
+                                fontSize: 24.sp, color: Colors.white)),
                       ),
                     ),
                   ],
                 ),
               ),
-            )
+            ),
+            ////
+            _buildShippingCompanySection(),
+
+            // Payment Methods  3
+            Card(
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Payment Methods
+                    const Text("طريقة الدفع",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+
+                    // Usage in your payment methods section:
+                    Row(
+                      children: [
+                        _buildPaymentMethodButton(
+                          method: 'mada',
+                          imagePath: 'assets/images/pay-option-mada.png',
+                          label: 'مدى',
+                        ),
+                        _buildPaymentMethodButton(
+                          method: 'tabby',
+                          label: 'تابي',
+                          imagePath: 'assets/images/pay-option-tabby_en.png',
+                        ),
+                        _buildPaymentMethodButton(
+                          imagePath: 'assets/images/pay-option-credit-2.png',
+                          method: 'visa',
+                          label: 'فيزا',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Card Details
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: "رقم البطاقة",
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Iconsax.card),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 10),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "تاريخ الانتهاء",
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Iconsax.calendar_1),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "CVC",
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Iconsax.lock_1),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Delivery Note
+                    const Text(
+                      "ملاحظة: لا يمكن توصيل الطلب في نفس اليوم عند إتمام الطلب بعد الساعة 11 ليلاً، ولكن يتم ترحيل التوصيل لليوم التالي. طلبات منطقة جدة ومكة يتم ترحيلها للصباح التالي.",
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Confirm Payment Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          backgroundColor: AppColor.primaryColor,
+                        ),
+                        onPressed: controller.confirmOrder,
+                        child: const Text("تأكيد الدفع",
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: controller.confirmOrder,
+                child: Text("تأكيد الطلب",
+                    style: TextStyle(fontSize: 24.sp, color: Colors.white)),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+// Shipping Company Selection Widget
+  Widget _buildShippingCompanySection() {
+    final controller = Get.find<CheckoutController>();
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            const Text("شركة الشحن",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            const Text(
+                "اختر أحد خيارات الشحن المتاحة بناء على مدة ورسوم التوصيل",
+                style: TextStyle(color: Colors.grey)),
+            const SizedBox(height: 20),
+
+            // Shipping Options
+            Obx(() => Column(
+                  children: [
+                    RadioListTile<String>(
+                      title: Text("1 مندوب",
+                          style: TextStyle(
+                              fontSize: 20.sp, fontWeight: FontWeight.bold)),
+                      subtitle: Text("خلال 24 ساعة",
+                          style: TextStyle(
+                              fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                      secondary: Text("50 ﷼",
+                          style: TextStyle(
+                              fontSize: 26.sp, fontWeight: FontWeight.bold)),
+                      value: "1 مندوب",
+                      groupValue: controller.selectedShippingCompany.value,
+                      onChanged: (value) =>
+                          controller.selectedShippingCompany.value = value!,
+                      activeColor: AppColor.primaryColor,
+                    ),
+                    RadioListTile<String>(
+                      title: Text("2 مندوب",
+                          style: TextStyle(
+                              fontSize: 20.sp, fontWeight: FontWeight.bold)),
+                      subtitle: Text("خلال 48 ساعة",
+                          style: TextStyle(
+                              fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                      secondary: Text("25 ﷼",
+                          style: TextStyle(
+                              fontSize: 26.sp, fontWeight: FontWeight.bold)),
+                      value: "2 مندوب",
+                      groupValue: controller.selectedShippingCompany.value,
+                      onChanged: (value) =>
+                          controller.selectedShippingCompany.value = value!,
+                      activeColor: AppColor.primaryColor,
+                    ),
+                  ],
+                )),
+
+            // Notes Field
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: controller.shippingNotesController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: "أضف ملاحظة",
+                border: OutlineInputBorder(),
+                alignLabelWithHint: true,
+              ),
+            ),
+
+            // Confirm Button
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                onPressed: controller.confirmShipping,
+                child: const Text("أكد شركة الشحن",
+                    style: TextStyle(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// Payment Method Button Widget
+// Payment Method Button Widget with Radio Selection
+  Widget _buildPaymentMethodButton({
+    required String method,
+    required String imagePath,
+    required String label,
+  }) {
+    final controller = Get.find<CheckoutController>();
+
+    return Obx(() {
+      final isSelected = controller.selectedPaymentMethod.value == method;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => controller.selectPaymentMethod(method),
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppColor.primaryColor.withOpacity(0.1)
+                  : Colors.transparent,
+              border: Border.all(
+                color:
+                    isSelected ? AppColor.primaryColor : Colors.grey.shade300,
+                width: 1.5,
+              ),
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Row(
+              children: [
+                // Radio Button
+                SizedBox(
+                  width: 20,
+                  height: 24,
+                  child: Radio<String>(
+                    value: method,
+                    groupValue: controller.selectedPaymentMethod.value,
+                    onChanged: (value) =>
+                        controller.selectPaymentMethod(value!),
+                    activeColor: AppColor.primaryColor,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+                const SizedBox(width: 8),
+
+                // Payment Method Content
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      imagePath,
+                      width: 40,
+                      height: 24,
+                      fit: BoxFit.contain,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected
+                            ? AppColor.primaryColor
+                            : Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildBranchDetails() {
@@ -221,9 +499,9 @@ class CheckoutScreen extends StatelessWidget {
                 const Spacer(),
                 Padding(
                   padding: EdgeInsets.only(right: 15.w),
-                  child: const Text("إضافة عنوان جديد",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text("إضافة عنوان جديد",
+                      style: TextStyle(
+                          fontSize: 24.sp, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

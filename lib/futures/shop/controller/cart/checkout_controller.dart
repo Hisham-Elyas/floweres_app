@@ -1,14 +1,23 @@
+import 'package:floweres_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../data/repositories/order/order_repo.dart';
 import '../../../../utils/local_storage/storage_utility.dart';
+import '../../../../utils/popups/full_screen_loader.dart';
+import '../../../../utils/popups/loaders.dart';
+import '../../../auth/controller/profile_controller.dart';
 import '../../model/address_model.dart';
+import '../../model/order_model.dart';
+import 'cart_controller.dart';
 
 class CheckoutController extends GetxController {
   final _storage = HLocalStorage.instance();
-  var couponController = TextEditingController();
 
-  // Form controllers
+  // Step management
+  final RxInt currentStep = 1.obs; // 1: Address, 2: Shipping, 3: Payment
+
+  // Address form controllers
   var selectedCountry = "السعودية".obs;
   var selectedCity = "الرياض".obs;
   var streetController = TextEditingController();
@@ -16,49 +25,35 @@ class CheckoutController extends GetxController {
   var houseDescController = TextEditingController();
   var postalCodeController = TextEditingController();
 
+  // Address management
   final RxList<Address> addresses = <Address>[].obs;
   final Rx<Address?> selectedAddress = Rx<Address?>(null);
   final RxString selectedAddressId = ''.obs;
+
+  // Checkout state
   final Rx<CheckoutState> state = CheckoutState.add.obs;
   final RxBool isEditing = false.obs;
   Address? editingAddress;
 
+  // Delivery and payment
   var selectedDeliveryMethod = 1.obs; // 1: Home Delivery, 2: Branch Pickup
-  // Add in CheckoutController
   var selectedPaymentMethod = 'mada'.obs;
-
-  void selectPaymentMethod(String method) {
-    selectedPaymentMethod.value = method;
-  }
-
-  // Add to CheckoutController
   final RxString selectedShippingCompany = ''.obs;
   final shippingNotesController = TextEditingController();
-
-  void confirmShipping() {
-    if (selectedShippingCompany.isEmpty) {
-      Get.snackbar("خطأ", "يرجى اختيار شركة شحن");
-      return;
-    }
-    // Handle shipping confirmation logic
-    Get.snackbar("تم التأكيد", "تم تأكيد شركة الشحن بنجاح");
-  }
+  var couponController = TextEditingController();
 
   @override
   void onInit() {
+    super.onInit();
     loadAddresses();
     if (addresses.isNotEmpty) {
       state.value = CheckoutState.select;
     }
-    super.onInit();
   }
 
-  void saveAddresses() {
-    List<Map<String, dynamic>> cartJson =
-        addresses.map((item) => item.toMap()).toList();
-    _storage.writeData('ADDRESSES', cartJson);
-  }
+  bool get showShippingStep => selectedDeliveryMethod.value == 1;
 
+  // Address methods
   void loadAddresses() {
     List<dynamic>? storedAddresses =
         _storage.readData<List<dynamic>>('ADDRESSES');
@@ -68,30 +63,20 @@ class CheckoutController extends GetxController {
     }
   }
 
+  void saveAddresses() {
+    List<Map<String, dynamic>> addressJson =
+        addresses.map((item) => item.toMap()).toList();
+    _storage.writeData('ADDRESSES', addressJson);
+  }
+
   void selectAddress(Address address) {
     selectedAddress.value = address;
     selectedAddressId.value = address.id;
   }
 
-  bool isSelected(Address address) {
-    return selectedAddressId.value == address.id;
-  }
+  bool isSelected(Address address) => selectedAddressId.value == address.id;
 
-  /// Fake apply coupon logic
-  void applyCoupon() {
-    // Add your coupon logic here
-    Get.snackbar("Coupon", "تم تطبيق الكوبون بنجاح (مثال)");
-  }
-
-  /// Fake confirm order logic
-  void confirmOrder() {
-    // Add your order confirmation logic here
-    Get.snackbar("Order", "تم تأكيد الطلب بنجاح (مثال)");
-  }
-
-  addNewAddress() {
-    state.value = CheckoutState.add;
-  }
+  void addNewAddress() => state.value = CheckoutState.add;
 
   void initForm(Address? address) {
     if (address != null) {
@@ -102,7 +87,7 @@ class CheckoutController extends GetxController {
       houseDescController.text = address.houseDesc;
       postalCodeController.text = address.postalCode;
       state.value = CheckoutState.editing;
-      isEditing.value = false;
+      isEditing.value = true;
       editingAddress = address;
     }
   }
@@ -120,7 +105,7 @@ class CheckoutController extends GetxController {
 
     if (isEditing.value) {
       final index = addresses.indexWhere((a) => a.id == address.id);
-      addresses[index] = address;
+      if (index != -1) addresses[index] = address;
     } else {
       addresses.add(address);
     }
@@ -128,21 +113,13 @@ class CheckoutController extends GetxController {
     clearForm();
     state.value = CheckoutState.select;
     saveAddresses();
-    Get.snackbar(
-      'تم الحفظ',
-      'تم حفظ العنوان بنجاح',
-    );
+    Get.snackbar('تم الحفظ', 'تم حفظ العنوان بنجاح');
   }
 
   void deleteAddress(String id) {
     addresses.removeWhere((a) => a.id == id);
-    Get.snackbar(
-      'تم الحذف',
-      'تم حذف العنوان بنجاح',
-    );
-    if (addresses.isEmpty) {
-      state.value = CheckoutState.add;
-    }
+    Get.snackbar('تم الحذف', 'تم حذف العنوان بنجاح');
+    if (addresses.isEmpty) state.value = CheckoutState.add;
   }
 
   void clearForm() {
@@ -150,19 +127,86 @@ class CheckoutController extends GetxController {
     districtController.clear();
     houseDescController.clear();
     postalCodeController.clear();
-
     isEditing.value = false;
     editingAddress = null;
   }
 
-  void confirmAddress() {
-    if (selectedAddress.value == null) {
-      Get.snackbar(
-        'خطأ',
-        'يرجى اختيار عنوان أولاً',
-      );
-      return;
+  // Validation and confirmation methods
+  bool validateAddressStep() {
+    if (selectedDeliveryMethod.value == 1 && selectedAddress.value == null) {
+      Get.snackbar('خطأ', 'يرجى اختيار عنوان أولاً');
+      return false;
     }
+    return true;
+  }
+
+  bool validateShippingStep() {
+    if (selectedShippingCompany.value.isEmpty) {
+      Get.snackbar("خطأ", "يرجى اختيار شركة شحن");
+      return false;
+    }
+    return true;
+  }
+
+  bool validatePaymentStep() {
+    if (selectedPaymentMethod.value.isEmpty) {
+      Get.snackbar("خطأ", "يرجى اختيار طريقة دفع");
+      return false;
+    }
+    return true;
+  }
+
+  void confirmAddress() {
+    if (validateAddressStep()) {
+      currentStep.value = 2;
+    }
+  }
+
+  void confirmShipping() {
+    if (validateShippingStep()) {
+      currentStep.value = 3;
+    }
+  }
+
+  void confirmPayment() {
+    if (validatePaymentStep()) {
+      confirmOrder();
+    }
+  }
+
+  void selectPaymentMethod(String method) =>
+      selectedPaymentMethod.value = method;
+
+  void applyCoupon() => Get.snackbar("Coupon", "تم تطبيق الكوبون بنجاح (مثال)");
+
+  void confirmOrder() async {
+    HFullScreenLoader.popUpCircular();
+    // Your order confirmation logic here
+    CartController cartController = CartController.instance;
+    final order = OrderModel(
+        userId: ProfileController.instance.user.value.id!,
+        totalAmount: double.parse(cartController.totalAmountcartItems),
+        shippingNotes: shippingNotesController.text,
+
+        // 1: Home Delivery, 2: Branch Pickup
+        deliveryMethod: selectedDeliveryMethod.value == 1
+            ? "Home Delivery"
+            : "Branch Pickup",
+        shippingAddress: selectedAddress.value,
+        shippingCompany: selectedShippingCompany.value,
+        paymentMethod: selectedPaymentMethod.value,
+        item: cartController.cartItems);
+
+    try {
+      await Get.put(OrderRepo()).createOrder(order: order);
+      cartController.clearCart();
+      HFullScreenLoader.stopLoading();
+      Get.offAllNamed(HRoutes.home);
+    } catch (e) {
+      HFullScreenLoader.stopLoading();
+      HLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());
+    }
+    Get.snackbar("تم التأكيد", "تم تأكيد الطلب بنجاح");
   }
 }
 

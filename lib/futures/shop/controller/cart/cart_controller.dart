@@ -28,6 +28,11 @@ class CartController extends GetxController {
     saveCart(); // Save cart after removing an item
   }
 
+  void clearCart() {
+    cartItems.clear();
+    saveCart(); // Save cart after removing an item
+  }
+
   void decrementQuantity(String id) {
     int index = cartItems.indexWhere((item) => item.productId == id);
     if (index != -1 && cartItems[index].quantity > 1) {

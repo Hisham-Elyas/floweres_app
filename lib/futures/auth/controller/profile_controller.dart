@@ -13,6 +13,18 @@ class ProfileController extends GetxController {
   static ProfileController get instance => Get.find();
   final isLoading = false.obs;
   Rx<UserModel> user = UserModel.empty().obs;
+
+  final RxInt selectedTab = 0.obs;
+
+  void changeTab(int index) {
+    selectedTab.value = index;
+  }
+
+  void logout() {
+    // Add your logout logic here
+    Get.offAllNamed('/login');
+  }
+
   @override
   void onInit() {
     _loadUserInfo();

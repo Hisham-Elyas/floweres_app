@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../routes/routes.dart';
 import '../controller/profile_controller.dart';
 
 class ProfileContent extends StatelessWidget {
@@ -51,11 +52,19 @@ class ProfileContent extends StatelessWidget {
 
           // Menu Items
 
-          _buildMenuItem(Iconsax.notification, "الاشعارات", onTap: () {}),
-          _buildMenuItem(Iconsax.bag_tick, "الطلبات", onTap: () {}),
           // _buildMenuItem(Iconsax.timer, "طلبات بانتظار الدفع", onTap: () {}),
-          _buildMenuItem(Iconsax.heart, "المفصلة", onTap: () {}),
-          _buildMenuItem(Iconsax.user_edit, "حسابي", onTap: () {}),
+          _buildMenuItem(Iconsax.notification, "الاشعارات", onTap: () {
+            Get.toNamed(HRoutes.profileScreen);
+          }),
+          _buildMenuItem(Iconsax.bag_tick, "الطلبات", onTap: () {
+            Get.toNamed(HRoutes.profileScreen);
+          }),
+          _buildMenuItem(Iconsax.heart, "المفصلة", onTap: () {
+            Get.toNamed(HRoutes.profileScreen);
+          }),
+          _buildMenuItem(Iconsax.user_edit, "حسابي", onTap: () {
+            Get.toNamed(HRoutes.profileScreen);
+          }),
           _buildMenuItem(
             Iconsax.logout,
             "تسجيل الخروج",

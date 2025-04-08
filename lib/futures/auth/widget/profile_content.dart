@@ -54,15 +54,22 @@ class ProfileContent extends StatelessWidget {
 
           // _buildMenuItem(Iconsax.timer, "طلبات بانتظار الدفع", onTap: () {}),
           _buildMenuItem(Iconsax.notification, "الاشعارات", onTap: () {
+            // الاشعارات
+            ProfileController.instance.changeTab(3);
             Get.toNamed(HRoutes.profileScreen);
           }),
           _buildMenuItem(Iconsax.bag_tick, "الطلبات", onTap: () {
+            ProfileController.instance.changeTab(1); // tab index for "الطلبات"
             Get.toNamed(HRoutes.profileScreen);
           }),
           _buildMenuItem(Iconsax.heart, "المفصلة", onTap: () {
+            // الأمنيات
+            ProfileController.instance.changeTab(2);
             Get.toNamed(HRoutes.profileScreen);
           }),
           _buildMenuItem(Iconsax.user_edit, "حسابي", onTap: () {
+            // حسابي
+            ProfileController.instance.changeTab(0);
             Get.toNamed(HRoutes.profileScreen);
           }),
           _buildMenuItem(

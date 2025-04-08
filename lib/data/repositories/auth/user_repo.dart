@@ -48,6 +48,26 @@ class UserRepo extends GetxController {
     }
   }
 
+  Future<void> updateUser({required UserModel user}) async {
+    try {
+      await _db
+          .collection("Users")
+          .doc(user.id)
+          .update(user.toMap(isUpdate: true));
+      saveUserInfo(user: user);
+    } on FirebaseAuthException catch (e) {
+      throw HFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw HFirebaseException(e.code).message;
+    } on FormatException catch (_) {
+      throw const HFormatException();
+    } on PlatformException catch (e) {
+      throw HPlatformException(e.code).message;
+    } catch (e) {
+      throw "Someting went weong. pleas try agin";
+    }
+  }
+
   Future<UserModel> fetchUserDetails() async {
     try {
       final docSnapshot = await _db

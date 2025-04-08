@@ -6,7 +6,39 @@
 /// Switch of Custom Brand-Text-Size Widget
 enum AppRole { admin, user }
 
-enum OrderStatus { pending, processing, shipped, delivered, cancelled }
+enum TransactionType { buy, sell }
+
+enum ProductType { single, variable }
+
+enum ProductVisibility { published, hidden }
+
+enum TextSizes { small, medium, large }
+
+enum ImageType { asset, network, memory, file }
+
+enum MediaCategory { folders, banners, brands, categories, products, users }
+
+enum OrderStatus {
+  pending,
+  processing,
+  shipped,
+  delivered,
+  cancelled,
+  readyForPickup
+}
+
+enum DeliveryMethod { homeDelivery, branchPickup }
+
+extension DeliveryTypeExtension on DeliveryMethod {
+  String get nameFormatted {
+    switch (this) {
+      case DeliveryMethod.homeDelivery:
+        return "Home Delivery";
+      case DeliveryMethod.branchPickup:
+        return "Branch Pickup";
+    }
+  }
+}
 
 enum PaymentMethods {
   paypal,

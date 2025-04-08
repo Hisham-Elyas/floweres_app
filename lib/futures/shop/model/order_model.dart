@@ -13,12 +13,12 @@ class OrderModel {
   final String userId;
   final double totalAmount;
   DateTime? createdAt;
-  final String deliveryMethod;
+  final DeliveryMethod deliveryMethod;
   final Address? shippingAddress;
   final String shippingCompany;
   final String? shippingNotes;
   final String paymentMethod;
-  final OrderStatus orderStatus;
+  OrderStatus orderStatus;
   final List<CartItemModel> item;
 
   OrderModel({
@@ -40,7 +40,7 @@ class OrderModel {
     String? userId,
     double? totalAmount,
     DateTime? createdAt,
-    String? deliveryMethod,
+    DeliveryMethod? deliveryMethod,
     Address? shippingAddress,
     String? shippingCompany,
     String? shippingNotes,
@@ -69,7 +69,7 @@ class OrderModel {
       'userId': userId,
       'totalAmount': totalAmount,
       'createdAt': FieldValue.serverTimestamp(), // Always update this field
-      'deliveryMethod': deliveryMethod,
+      'deliveryMethod': deliveryMethod.name.toString(),
       'shippingAddress': shippingAddress?.toMap(),
       'shippingCompany': shippingCompany,
       'shippingNotes': shippingNotes,
@@ -85,9 +85,10 @@ class OrderModel {
       userId: map['userId'] as String,
       totalAmount: map['totalAmount'] as double,
       createdAt: map['createdAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int)
+          ? DateTime.fromMillisecondsSinceEpoch(map['createdAt'])
           : null,
-      deliveryMethod: map['deliveryMethod'] as String,
+      deliveryMethod: DeliveryMethod.values
+          .byName(map['deliveryMethod'] ?? DeliveryMethod.branchPickup.name),
       shippingAddress: map['shippingAddress'] != null
           ? Address.fromMap(map['shippingAddress'] as Map<String, dynamic>)
           : null,
@@ -105,6 +106,51 @@ class OrderModel {
       ),
     );
   }
+
+  factory OrderModel.fromSnapshot(
+      DocumentSnapshot<Map<String, dynamic>> document) {
+    if (document.data() != null) {
+      final data = document.data()!;
+      return OrderModel(
+        id: document.id,
+        userId: data['userId'] as String,
+        totalAmount: data['totalAmount'] as double,
+        createdAt: (data['createdAt'] != null)
+            ? (data['createdAt'] as Timestamp).toDate()
+            : null,
+        deliveryMethod: DeliveryMethod.values
+            .byName(data['deliveryMethod'] ?? DeliveryMethod.branchPickup.name),
+        shippingAddress: data['shippingAddress'] != null
+            ? Address.fromMap(data['shippingAddress'] as Map<String, dynamic>)
+            : null,
+        shippingCompany: data['shippingCompany'] as String,
+        shippingNotes: data['shippingNotes'] != null
+            ? data['shippingNotes'] as String
+            : null,
+        paymentMethod: data['paymentMethod'] as String,
+        orderStatus: OrderStatus.values
+            .byName(data['orderStatus'] ?? OrderStatus.pending.name),
+        item: List<CartItemModel>.from(
+          (data['item'] as List).map<CartItemModel>(
+            (x) => CartItemModel.fromMap(x as Map<String, dynamic>),
+          ),
+        ),
+      );
+    } else {
+      return OrderModel.empty();
+    }
+  }
+
+  static OrderModel empty() => OrderModel(
+        id: '',
+        userId: '',
+        totalAmount: 0,
+        deliveryMethod: DeliveryMethod.branchPickup,
+        shippingAddress: null,
+        shippingCompany: '',
+        paymentMethod: '',
+        item: [],
+      );
 
   String toJson() => json.encode(toMap());
 

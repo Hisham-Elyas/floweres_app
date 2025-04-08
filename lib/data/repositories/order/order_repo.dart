@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../futures/shop/model/order_model.dart';
 import '../../../utils/exceptions/firebase_exceptions.dart';
 import '../../../utils/exceptions/platform_exceptions.dart';
+import '../auth/auth_repo.dart';
 
 class OrderRepo extends GetxController {
   static OrderRepo get instance => Get.find();
@@ -24,14 +25,13 @@ class OrderRepo extends GetxController {
   }
 
   // Listen to real-time database updates
-  // Stream<List<OrderModel>> getAllOrderStream() {
-  //   return _db
-  //       .collection("Orders")
-  //       .snapshots()
-  //       .map((snapshot) {
-  //     return snapshot.docs
-  //         .map((doc) => BannersModel.fromSnapshot(doc))
-  //         .toList();
-  //   });
-  // }
+  Stream<List<OrderModel>> getAllOrderStream() {
+    return _db
+        .collection("Orders")
+        .where('userId', isEqualTo: AuthRepo.instance.authUser!.uid)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => OrderModel.fromSnapshot(doc)).toList();
+    });
+  }
 }

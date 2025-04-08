@@ -19,6 +19,8 @@ class HHelperFunctions {
       return Colors.orange;
     } else if (OrderStatus.shipped == value) {
       return Colors.purple;
+    } else if (value == OrderStatus.readyForPickup) {
+      return Colors.teal;
     } else if (OrderStatus.delivered == value) {
       return Colors.green;
     } else if (OrderStatus.cancelled == value) {

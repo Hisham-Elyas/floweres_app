@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../data/repositories/order/order_repo.dart';
+import '../../../../utils/constants/enums.dart';
 import '../../../../utils/local_storage/storage_utility.dart';
 import '../../../../utils/popups/full_screen_loader.dart';
 import '../../../../utils/popups/loaders.dart';
@@ -181,6 +182,11 @@ class CheckoutController extends GetxController {
 
   void confirmOrder() async {
     HFullScreenLoader.popUpCircular();
+    if (selectedDeliveryMethod.value == 1 && selectedAddress.value == null) {
+      Get.snackbar('خطأ', 'يرجى اختيار عنوان أولاً');
+      currentStep.value = 1;
+      return;
+    }
     // Your order confirmation logic here
     CartController cartController = CartController.instance;
     final order = OrderModel(
@@ -190,8 +196,8 @@ class CheckoutController extends GetxController {
 
         // 1: Home Delivery, 2: Branch Pickup
         deliveryMethod: selectedDeliveryMethod.value == 1
-            ? "Home Delivery"
-            : "Branch Pickup",
+            ? DeliveryMethod.homeDelivery
+            : DeliveryMethod.branchPickup,
         shippingAddress: selectedAddress.value,
         shippingCompany: selectedShippingCompany.value,
         paymentMethod: selectedPaymentMethod.value,

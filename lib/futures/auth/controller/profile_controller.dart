@@ -1,3 +1,4 @@
+import 'package:floweres_app/utils/popups/full_screen_loader.dart';
 import 'package:get/get.dart';
 
 import '../../../data/repositories/auth/auth_repo.dart';
@@ -27,7 +28,7 @@ class ProfileController extends GetxController {
 
   @override
   void onInit() {
-    _loadUserInfo();
+    loadUserInfo();
     super.onInit();
   }
 
@@ -44,13 +45,38 @@ class ProfileController extends GetxController {
     }
   }
 
-  _loadUserInfo() {
+  loadUserInfo() {
     final userRepo = Get.put(UserRepo());
     UserModel? saveUser = userRepo.loadUserInfo();
     if (saveUser == null) {
       _fetchUserDetails();
     } else {
       user.value = saveUser;
+    }
+  }
+
+  Future<void> updateProfile() async {
+    try {
+      HFullScreenLoader.popUpCircular();
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        HFullScreenLoader.stopLoading();
+        HLoaders.warningSnackBar(title: 'No Internet Connection');
+        return;
+      }
+
+      // Update user in Firestore
+      await UserRepo.instance.updateUser(user: user.value);
+
+      // Update local storage
+      UserRepo.instance.saveUserInfo(user: user.value);
+
+      HFullScreenLoader.stopLoading();
+      Get.back();
+      HLoaders.successSnackBar(title: 'Profile Updated Successfully');
+    } catch (e) {
+      HFullScreenLoader.stopLoading();
+      HLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
     }
   }
 

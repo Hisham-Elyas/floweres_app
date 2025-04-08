@@ -1,146 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
-import '../../../../../app_coloer.dart';
 import '../../../../auth/controller/profile_controller.dart';
+import '../../../controller/notification/notification_controller.dart';
+import 'widget/account_info_tab.dart';
+import 'widget/notifications_tab.dart';
+import 'widget/orders_tab.dart';
+import 'widget/wishlist_tab.dart';
 
 class ProfileScreen extends StatelessWidget {
-  final ProfileController controller = Get.put(ProfileController());
-
-  ProfileScreen({super.key});
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "الرئيسية : حسابي ، الطلبات",
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildNavigationTabs(),
-            _buildContentArea(),
-          ],
-        ),
-      ),
-    );
-  }
+    final controller = Get.put(ProfileController());
+    final notificationController = Get.put(NotificationController());
+    controller.loadUserInfo();
 
-  Widget _buildNavigationTabs() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
-      ),
-      child: Column(
-        children: [
-          SizedBox(height: 16.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildTabButton("الاشعارات", 0),
-              _buildTabButton("الطلبات", 1),
-              _buildTabButton("المفصلة", 2),
+    return DefaultTabController(
+      initialIndex: controller.selectedTab.value,
+      length: 4,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("حسابي"),
+          actions: [
+            IconButton(
+              icon: const Icon(Iconsax.edit),
+              onPressed: () => Get.to(() => const EditProfileScreen()),
+            ),
+          ],
+          bottom: TabBar(
+            isScrollable: true,
+            tabs: [
+              const Tab(icon: Icon(Iconsax.user), text: "حسابي"),
+              const Tab(icon: Icon(Iconsax.bag_2), text: "الطلبات"),
+              const Tab(icon: Icon(Iconsax.heart), text: "المفضلة"),
+              Tab(
+                  icon: Obx(() {
+                    return Badge(
+                        isLabelVisible: true,
+                        label: Text(
+                            "${notificationController.notifications.length}"),
+                        child: const Icon(Iconsax.notification));
+                  }),
+                  text: "الإشعارات"),
             ],
           ),
-          _buildLogoutButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabButton(String text, int index) {
-    return Obx(
-      () => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextButton(
-            onPressed: () => controller.changeTab(index),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-            ),
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: controller.selectedTab.value == index
-                    ? AppColor.primaryColor
-                    : Colors.grey[600],
-              ),
-            ),
-          ),
-          Container(
-            height: 2.h,
-            width: 40.w,
-            color: controller.selectedTab.value == index
-                ? AppColor.primaryColor
-                : Colors.transparent,
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLogoutButton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.h),
-      child: TextButton(
-        onPressed: controller.logout,
-        child: Text(
-          "تسجيل الخروج",
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: Colors.red,
-            decoration: TextDecoration.underline,
-          ),
         ),
+        body: Obx(() {
+          return TabBarView(
+            children: [
+              AccountInfoTab(user: controller.user.value),
+              const OrdersTab(),
+              const WishlistTab(),
+              const NotificationsTab(),
+            ],
+          );
+        }),
       ),
     );
   }
-
-  Widget _buildContentArea() {
-    return Obx(
-      () => Container(
-        padding: EdgeInsets.all(16.w),
-        height: 500.h,
-        child: _getSelectedContent(),
-      ),
-    );
-  }
-
-  Widget _getSelectedContent() {
-    switch (controller.selectedTab.value) {
-      case 0:
-        return _buildNotificationsContent();
-      case 1:
-        return _buildOrdersContent();
-      case 2:
-        return _buildDetailsContent();
-      default:
-        return Container();
-    }
-  }
-
-  Widget _buildOrdersContent() {
-    return Center(
-      child: Text(
-        "لا يوجد طلبات",
-        style: TextStyle(
-          fontSize: 16.sp,
-          color: Colors.grey,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNotificationsContent() => const Placeholder();
-  Widget _buildDetailsContent() => const Placeholder();
 }

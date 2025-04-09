@@ -1,4 +1,3 @@
-import 'package:floweres_app/futures/shop/model/products_model.dart';
 import 'package:get/get.dart';
 
 import '../../../../data/repositories/auth/auth_repo.dart';
@@ -7,6 +6,7 @@ import '../../../../utils/popups/bottom_sheet.dart';
 import '../../../../utils/popups/loaders.dart';
 import '../../../auth/widget/login_widget.dart';
 import '../../model/cart_itme_model.dart';
+import '../../model/products_model.dart';
 import '../../screen/home/cart/checkout_screen.dart';
 
 class CartController extends GetxController {

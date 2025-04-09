@@ -29,6 +29,7 @@ class OrderRepo extends GetxController {
     return _db
         .collection("Orders")
         .where('userId', isEqualTo: AuthRepo.instance.authUser!.uid)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) => OrderModel.fromSnapshot(doc)).toList();

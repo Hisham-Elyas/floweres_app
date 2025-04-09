@@ -23,26 +23,37 @@ class NotificationController extends GetxController {
       isLoading.value = true;
       _notificationRepo.getUserNotifications().listen((notificationsList) {
         notifications.assignAll(notificationsList);
+        // notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         unreadCount.value = notifications.where((n) => !n.isRead).length;
       });
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> markAsRead(String notificationId) async {
-    await _notificationRepo.markAsRead(notificationId);
-    unreadCount.value = notifications.where((n) => !n.isRead).length;
+    try {
+      await _notificationRepo.markAsRead(notificationId);
+      unreadCount.value = notifications.where((n) => !n.isRead).length;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
+    }
   }
 
   Future<void> markAllAsRead() async {
-    final unreadIds =
-        notifications.where((n) => !n.isRead).map((n) => n.id).toList();
+    try {
+      final unreadIds =
+          notifications.where((n) => !n.isRead).map((n) => n.id).toList();
 
-    for (final id in unreadIds) {
-      await _notificationRepo.markAsRead(id);
+      for (final id in unreadIds) {
+        await _notificationRepo.markAsRead(id);
+      }
+
+      unreadCount.value = 0;
+    } catch (e) {
+      Get.snackbar('Error', e.toString());
     }
-
-    unreadCount.value = 0;
   }
 }

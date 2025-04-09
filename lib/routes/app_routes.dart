@@ -8,7 +8,7 @@ import 'routes.dart';
 
 class HAppRoutes {
   static final List<GetPage<dynamic>> pages = [
-    GetPage(name: HRoutes.profileScreen, page: () => ProfileScreen()),
+    GetPage(name: HRoutes.profileScreen, page: () => const ProfileScreen()),
     GetPage(name: HRoutes.home, page: () => const HomeScreen()),
     GetPage(name: HRoutes.cart, page: () => const CartScreen()),
     GetPage(

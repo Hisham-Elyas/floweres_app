@@ -40,8 +40,8 @@ class ProfileScreen extends StatelessWidget {
                   icon: Obx(() {
                     return Badge(
                         isLabelVisible: true,
-                        label: Text(
-                            "${notificationController.notifications.length}"),
+                        label:
+                            Text("${notificationController.unreadCount.value}"),
                         child: const Icon(Iconsax.notification));
                   }),
                   text: "الإشعارات"),

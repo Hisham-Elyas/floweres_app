@@ -10,7 +10,6 @@ class CategoriesController extends HBaseDataController<CategoryModel> {
 
   @override
   bool containsSearchQuery(CategoryModel item, String query) {
-    // TODO: implement containsSearchQuery
     throw UnimplementedError();
   }
 

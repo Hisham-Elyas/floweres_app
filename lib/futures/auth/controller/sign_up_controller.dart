@@ -1,4 +1,3 @@
-import 'package:floweres_app/futures/shop/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -6,6 +5,7 @@ import '../../../data/repositories/auth/auth_repo.dart';
 import '../../../data/repositories/auth/user_repo.dart';
 import '../../../utils/helpers/network_manager.dart';
 import '../../../utils/popups/loaders.dart';
+import '../../shop/model/user_model.dart';
 
 class SignUpController extends GetxController {
   final hidePassword = true.obs;

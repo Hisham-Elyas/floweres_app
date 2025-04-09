@@ -1,6 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:floweres_app/futures/shop/model/cart_itme_model.dart';
-import 'package:floweres_app/futures/shop/screen/home/widget/breadcrumbs/breadcrumbs_with_heading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -9,7 +7,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../../app_coloer.dart';
 import '../../../controller/cart/cart_controller.dart';
+import '../../../model/cart_itme_model.dart';
 import '../../widget/app_bar.dart';
+import '../widget/breadcrumbs/breadcrumbs_with_heading.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});

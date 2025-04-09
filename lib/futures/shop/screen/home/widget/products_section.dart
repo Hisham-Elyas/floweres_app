@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:floweres_app/futures/shop/model/products_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -12,6 +11,7 @@ import '../../../controller/cart/cart_controller.dart';
 import '../../../controller/products/categories_products_details_controller.dart';
 import '../../../controller/products/favorites_controller.dart';
 import '../../../controller/products/products_controller.dart';
+import '../../../model/products_model.dart';
 
 class ProductsSection extends StatelessWidget {
   const ProductsSection({super.key});

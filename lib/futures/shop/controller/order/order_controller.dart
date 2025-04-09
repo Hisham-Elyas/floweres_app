@@ -1,6 +1,6 @@
-import 'package:floweres_app/data/repositories/order/order_repo.dart';
 import 'package:get/get.dart';
 
+import '../../../../data/repositories/order/order_repo.dart';
 import '../../model/order_model.dart';
 
 class OrdersController extends GetxController {

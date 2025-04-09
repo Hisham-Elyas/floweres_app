@@ -8,6 +8,7 @@ import '../../../../../../utils/constants/colors.dart';
 import '../../../../../../utils/constants/sizes.dart';
 import '../../../../../../utils/helpers/helper_functions.dart';
 import '../../../../controller/products/favorites_controller.dart';
+import '../../../../controller/products/products_controller.dart';
 
 class WishlistTab extends StatelessWidget {
   const WishlistTab({super.key});
@@ -53,113 +54,120 @@ class WishlistTab extends StatelessWidget {
             ),
             itemBuilder: (_, index) {
               final product = controller.favorites[index];
-              return Container(
-                decoration: BoxDecoration(
-                  color: dark ? HColors.darkGrey : HColors.secondary,
-                  borderRadius: BorderRadius.circular(HSizes.cardRadiusMd),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Product Image
-                    Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(HSizes.cardRadiusMd),
-                            topRight: Radius.circular(HSizes.cardRadiusMd),
-                          ),
-                          child: Image.network(
-                            product.imageUrl,
-                            width: double.infinity,
-                            height: 150,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                const Icon(Iconsax.box),
-                          ),
-                        ),
-
-                        // Favorite Button
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: IconButton(
-                            icon: const Icon(
-                              Iconsax.heart5,
-                              color: Colors.red,
-                              size: 24,
+              return GestureDetector(
+                onTap: () {
+                  ProductsController.instance
+                      .showProductDestils(product: product);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: dark ? HColors.darkGrey : HColors.secondary,
+                    borderRadius: BorderRadius.circular(HSizes.cardRadiusMd),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Product Image
+                      Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(HSizes.cardRadiusMd),
+                              topRight: Radius.circular(HSizes.cardRadiusMd),
                             ),
-                            onPressed: () => controller.toggleFavorite(product),
+                            child: Image.network(
+                              product.imageUrl,
+                              width: double.infinity,
+                              height: 150,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Iconsax.box),
+                            ),
                           ),
-                        ),
 
-                        if (!product.isActive)
-                          Positioned.fill(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.4),
-                                borderRadius:
-                                    BorderRadius.circular(HSizes.cardRadiusMd),
+                          // Favorite Button
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: IconButton(
+                              icon: const Icon(
+                                Iconsax.heart5,
+                                color: Colors.red,
+                                size: 24,
                               ),
-                              child: Center(
-                                child: Transform.rotate(
-                                  angle: -0.5,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 1.2,
-                                        color: AppColor.emptyColor,
+                              onPressed: () =>
+                                  controller.toggleFavorite(product),
+                            ),
+                          ),
+
+                          if (!product.isActive)
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(
+                                      HSizes.cardRadiusMd),
+                                ),
+                                child: Center(
+                                  child: Transform.rotate(
+                                    angle: -0.5,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          width: 1.2,
+                                          color: AppColor.emptyColor,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      "نفدت الكمية",
-                                      style: TextStyle(
-                                        color: AppColor.emptyColor,
-                                        fontSize: 24.sp,
-                                        fontWeight: FontWeight.bold,
+                                      child: Text(
+                                        "نفدت الكمية",
+                                        style: TextStyle(
+                                          color: AppColor.emptyColor,
+                                          fontSize: 24.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-
-                    // Product Details
-                    Padding(
-                      padding: const EdgeInsets.all(HSizes.sm),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            product.name,
-                            style: Theme.of(context).textTheme.labelLarge,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: HSizes.xs),
-                          Row(
-                            children: [
-                              Text(
-                                '${product.price.toStringAsFixed(2)} ر.س',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
-                    ),
-                  ],
+
+                      // Product Details
+                      Padding(
+                        padding: const EdgeInsets.all(HSizes.sm),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.name,
+                              style: Theme.of(context).textTheme.labelLarge,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: HSizes.xs),
+                            Row(
+                              children: [
+                                Text(
+                                  '${product.price.toStringAsFixed(2)} ر.س',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

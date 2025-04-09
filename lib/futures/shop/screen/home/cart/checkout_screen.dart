@@ -746,22 +746,6 @@ class CheckoutScreen extends StatelessWidget {
         ],
       ),
     );
-
-    return const Card(
-      elevation: 2,
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Column(
-          children: [
-            ListTile(
-              leading: Icon(Iconsax.shop),
-              title: Text("فرع الرياض"),
-              subtitle: Text("مدة التجهيز: 2 ساعة\nالعنوان: KKKKKKKKKKKKKK"),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 

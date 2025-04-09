@@ -1,8 +1,8 @@
-import 'package:floweres_app/app_coloer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../app_coloer.dart';
 import '../../../routes/routes.dart';
 import '../controller/profile_controller.dart';
 

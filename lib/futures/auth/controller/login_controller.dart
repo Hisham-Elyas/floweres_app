@@ -1,16 +1,15 @@
-import 'package:floweres_app/utils/popups/loaders.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../data/repositories/auth/auth_repo.dart';
 import '../../../utils/helpers/network_manager.dart';
-import '../../../utils/local_Storage/storage_utility.dart';
+import '../../../utils/popups/loaders.dart';
 
 class LoginController extends GetxController {
   final hidePassword = true.obs;
   final remeberMe = false.obs;
   final isLoading = false.obs;
-  final _localStorage = HLocalStorage.instance();
+  // final _localStorage = HLocalStorage.instance();
 
   final email = TextEditingController();
   final password = TextEditingController();

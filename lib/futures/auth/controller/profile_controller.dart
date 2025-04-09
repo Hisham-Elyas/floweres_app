@@ -1,10 +1,10 @@
-import 'package:floweres_app/utils/popups/full_screen_loader.dart';
 import 'package:get/get.dart';
 
 import '../../../data/repositories/auth/auth_repo.dart';
 import '../../../data/repositories/auth/user_repo.dart';
 import '../../../utils/helpers/network_manager.dart';
 import '../../../utils/popups/bottom_sheet.dart';
+import '../../../utils/popups/full_screen_loader.dart';
 import '../../../utils/popups/loaders.dart';
 import '../../shop/model/user_model.dart';
 import '../widget/login_widget.dart';
@@ -93,7 +93,7 @@ class ProfileController extends GetxController {
       isLoading.value = false;
     } catch (e) {
       isLoading.value = false;
-      HLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
+      // HLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
     }
   }
 

@@ -95,15 +95,15 @@ class OrdersTab extends StatelessWidget {
                     Chip(
                       label: Text(
                         _getOrderStatusText(order.orderStatus),
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: HHelperFunctions.getOrderStatusColor(
-                                      order.orderStatus),
-                                ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: HHelperFunctions.getOrderStatusColor(
+                                  order.orderStatus),
+                            ),
                       ),
                       backgroundColor: HHelperFunctions.getOrderStatusColor(
                               order.orderStatus)
-                          .withOpacity(0.1),
+                          .withOpacity(0.3),
                     ),
                   ],
                 ),

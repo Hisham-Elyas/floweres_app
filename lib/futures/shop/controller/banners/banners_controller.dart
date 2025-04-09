@@ -11,7 +11,6 @@ class BannersController extends HBaseDataController<BannersModel> {
 
   @override
   bool containsSearchQuery(BannersModel item, String query) {
-    // TODO: implement containsSearchQuery
     throw UnimplementedError();
   }
 

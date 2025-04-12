@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../data/repositories/auth/auth_repo.dart';
@@ -10,34 +11,49 @@ import '../../shop/model/user_model.dart';
 import '../widget/login_widget.dart';
 import '../widget/profile_content.dart';
 
-class ProfileController extends GetxController {
+class ProfileController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   static ProfileController get instance => Get.find();
+
   final isLoading = false.obs;
   Rx<UserModel> user = UserModel.empty().obs;
 
   final RxInt selectedTab = 0.obs;
+  late TabController tabController;
+
+  @override
+  void onInit() {
+    super.onInit();
+    tabController = TabController(length: 4, vsync: this);
+    tabController.addListener(() {
+      if (!tabController.indexIsChanging) {
+        selectedTab.value = tabController.index;
+      }
+    });
+
+    ever(selectedTab, (index) {
+      if (tabController.index != index) {
+        tabController.animateTo(index);
+      }
+    });
+
+    loadUserInfo();
+  }
 
   void changeTab(int index) {
     selectedTab.value = index;
   }
 
   void logout() {
-    // Add your logout logic here
     Get.offAllNamed('/login');
-  }
-
-  @override
-  void onInit() {
-    loadUserInfo();
-    super.onInit();
   }
 
   openProfile() async {
     if (AuthRepo.instance.isAuthenticated) {
-      ///  open Profile
+      final controller = Get.put(ProfileController());
+      controller.loadUserInfo();
       HBottomSheet.openBottomSheet(child: const ProfileContent());
     } else {
-      ///  open Login
       HBottomSheet.openBottomSheet(
         isScrollControlled: true,
         child: const LoginWidget(),
@@ -65,10 +81,7 @@ class ProfileController extends GetxController {
         return;
       }
 
-      // Update user in Firestore
       await UserRepo.instance.updateUser(user: user.value);
-
-      // Update local storage
       UserRepo.instance.saveUserInfo(user: user.value);
 
       HFullScreenLoader.stopLoading();
@@ -93,7 +106,6 @@ class ProfileController extends GetxController {
       isLoading.value = false;
     } catch (e) {
       isLoading.value = false;
-      // HLoaders.errorSnackBar(title: 'Oh Snap', message: e.toString());
     }
   }
 

@@ -65,17 +65,19 @@ class LoginWidget extends StatelessWidget {
                     },
                     child: const Text("ليس لديك حساب ؟")),
                 const SizedBox(height: HSizes.spaceBtwInputFields * 2),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      onPressed: () async {
-                        await loginController.login();
-                        Get.back();
-                      },
-                      child: loginController.isLoading.value
-                          ? const CircularProgressIndicator()
-                          : const Text("دخول")),
-                ),
+                Obx(() {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          await loginController.login();
+                          Get.back();
+                        },
+                        child: loginController.isLoading.value
+                            ? const CircularProgressIndicator()
+                            : const Text("دخول")),
+                  );
+                }),
                 const SizedBox(height: HSizes.spaceBtwInputFields * 2),
               ],
             ),

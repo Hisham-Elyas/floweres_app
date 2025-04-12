@@ -4,6 +4,7 @@ import '../../../../utils/local_storage/storage_utility.dart';
 import '../../model/products_model.dart';
 
 class FavoritesController extends GetxController {
+  RxBool isLoading = false.obs;
   final RxList<ProductsModel> favorites = <ProductsModel>[].obs;
   final _storage = HLocalStorage.instance();
 
@@ -22,11 +23,13 @@ class FavoritesController extends GetxController {
 
   // Load favorites from GetStorage
   void loadFavorites() {
+    isLoading.value = true;
     List<dynamic>? storedFavs = _storage.readData<List<dynamic>>('FAVORITES');
     if (storedFavs != null) {
       favorites
           .assignAll(storedFavs.map((e) => ProductsModel.fromJson(e)).toList());
     }
+    isLoading.value = false;
   }
 
   // Toggle favorite status

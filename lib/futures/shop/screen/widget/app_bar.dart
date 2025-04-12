@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../routes/routes.dart';
+import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/device/device_utility.dart';
 import '../../../auth/controller/profile_controller.dart';
 import '../../controller/cart/cart_controller.dart';
@@ -55,5 +56,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(HDeviceUtils.getAppBarHeight());
+  Size get preferredSize => Size.fromHeight(
+        HDeviceUtils.getAppBarHeight() *
+            (Get.width >= HSizes.desktopScreenSize ? 1.5 : 1),
+      );
 }

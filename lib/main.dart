@@ -16,21 +16,14 @@ import 'utils/local_storage/storage_utility.dart';
 import 'utils/theme/theme.dart';
 
 void main() async {
-  // Ensure that widgets are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize GetX Local Storage
   await HLocalStorage.init("Floweres App");
-
-  // Remove # sign from url
   setPathUrlStrategy();
 
-  // Initialize Firebase & Authentication Repository
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   ).then((value) => Get.put(AuthRepo()));
-  await ScreenUtil.ensureScreenSize();
-  // Main App Starts here...
 
   runApp(const MyApp());
 }
@@ -38,34 +31,42 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(549, 960),
-      builder: (context, child) => GetMaterialApp(
-        navigatorObservers: [
-          RouteObservers(),
-        ],
-        debugShowCheckedModeBanner: false,
-        title: 'Floweres App',
-        themeMode: ThemeMode.light,
-        theme: HAppTheme.lightTheme,
-        darkTheme: HAppTheme.darkTheme,
-        scrollBehavior: MyCustomScrollBehavior(),
-        initialBinding: BindingsBuilder(
-          () {
-            Get.lazyPut(() => NetworkManager(), fenix: true);
-            Get.lazyPut(() => UserRepo(), fenix: true);
-          },
-        ),
-        initialRoute: HRoutes.home,
-        getPages: HAppRoutes.pages,
-        unknownRoute: GetPage(
-            name: "/page-not-found",
-            page: () =>
-                const Scaffold(body: Center(child: Text("Page Not Found")))),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Set design size based on device type
+        final designSize = constraints.maxWidth > 600
+            ? const Size(1200, 800) // Desktop/tablet
+            : const Size(549, 960); // Mobile   old const Size(549, 960),
+
+        return ScreenUtilInit(
+          designSize: designSize,
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, child) => GetMaterialApp(
+            navigatorObservers: [RouteObservers()],
+            debugShowCheckedModeBanner: false,
+            title: 'Floweres App',
+            themeMode: ThemeMode.light,
+            theme: HAppTheme.lightTheme,
+            darkTheme: HAppTheme.darkTheme,
+            scrollBehavior: MyCustomScrollBehavior(),
+            initialBinding: BindingsBuilder(() {
+              Get.lazyPut(() => NetworkManager(), fenix: true);
+              Get.lazyPut(() => UserRepo(), fenix: true);
+            }),
+            initialRoute: HRoutes.home,
+            getPages: HAppRoutes.pages,
+            unknownRoute: GetPage(
+              name: "/page-not-found",
+              page: () => const Scaffold(
+                body: Center(child: Text("Page Not Found")),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

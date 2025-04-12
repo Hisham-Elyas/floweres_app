@@ -19,55 +19,90 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categoriesController = Get.put(CategoriesController());
+    final isDesktop =
+        MediaQuery.of(context).size.width >= HSizes.desktopScreenSize;
+    final isTablet =
+        MediaQuery.of(context).size.width >= HSizes.tabletScreenSize;
+
     return Drawer(
-      shape: const BeveledRectangleBorder(),
+      width: isDesktop ? 300.w : null, // Fixed width for desktop
+      elevation: isDesktop ? 0 : 4, // No shadow on desktop if side-by-side
+      shape: isDesktop
+          ? const RoundedRectangleBorder() // Standard rectangle for desktop
+          : const BeveledRectangleBorder(), // Beveled for mobile
       child: Container(
-        decoration: const BoxDecoration(
-            // color: HColors.white,
-            border: Border(
-          right: BorderSide(color: HColors.grey, width: 1),
-        )),
+        decoration: BoxDecoration(
+          border: isDesktop
+              ? null // No border for desktop if using sidebar
+              : const Border(
+                  right: BorderSide(color: HColors.grey, width: 1),
+                ),
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: [
+              // Drawer Header
               DrawerHeader(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? HSizes.xl : HSizes.md,
+                  vertical: isDesktop ? HSizes.xl : HSizes.md,
+                ),
                 child: CachedNetworkImage(
                   imageUrl:
                       "https://cdn.salla.sa/form-builder/AxYPwEeamyUfaMJAnVot8a2HMLl0fQdjT6DbZRes.png",
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                       Skeletonizer(
                     enableSwitchAnimation: true,
                     enabled: true,
-                    child:
-                        Skeleton.shade(child: Icon(Iconsax.image, size: 60.dm)),
+                    child: Skeleton.shade(
+                      child: Icon(
+                        Iconsax.image,
+                        size: isDesktop ? 80.dm : 60.dm,
+                      ),
+                    ),
                   ),
                   errorWidget: (context, url, error) =>
-                      Icon(Icons.error, size: 60.dm),
+                      Icon(Icons.error, size: isDesktop ? 80.dm : 60.dm),
                 ),
               ),
+
               const SizedBox(height: HSizes.spaceBtwItems),
+
+              // Menu Items
               Padding(
-                padding: const EdgeInsets.all(HSizes.md),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? HSizes.xl : HSizes.md,
+                  vertical: isDesktop ? HSizes.lg : 0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text("MENU",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .apply(letterSpacingDelta: 1.2)),
+                    Text(
+                      "MENU",
+                      style: Theme.of(context).textTheme.bodySmall!.apply(
+                            letterSpacingDelta: 1.2,
+                            fontSizeFactor: isDesktop ? 1.2 : 1.0,
+                          ),
+                    ),
+                    SizedBox(height: isDesktop ? HSizes.lg : HSizes.md),
 
-                    /// Menu Item
+                    // Categories List
                     Obx(() {
-                      return ListView.builder(
+                      return ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: categoriesController.allItems.length,
+                        separatorBuilder: (context, index) => const SizedBox(
+                          height: HSizes.sm,
+                        ),
                         itemBuilder: (context, index) => MenuItem(
                           icon: Iconsax.category_2,
                           itemName: categoriesController.allItems[index].name,
+                          isActive: Get.currentRoute == HRoutes.categories &&
+                              Get.arguments ==
+                                  categoriesController.allItems[index].name,
                           onTap: () {
                             final ctegoriesProductsDetailsController =
                                 Get.put(CategoriesProductsDetailsController());
@@ -76,14 +111,16 @@ class MyDrawer extends StatelessWidget {
                               categoryId:
                                   categoriesController.allItems[index].id,
                             );
-                            // Close the drawer before navigating
-                            if (scaffoldKey?.currentState?.isDrawerOpen ??
-                                false) {
-                              Get.back(); // Closes the drawer
+
+                            // Close drawer if open (mobile/tablet)
+                            if ((scaffoldKey?.currentState?.isDrawerOpen ??
+                                    false) &&
+                                !isDesktop) {
+                              Get.back();
                             }
 
-                            // Navigate to the category screen while forcing argument updates
-                            Get.offAndToNamed(
+                            // Navigate to category
+                            Get.toNamed(
                               HRoutes.categories,
                               arguments:
                                   categoriesController.allItems[index].name,
@@ -94,7 +131,7 @@ class MyDrawer extends StatelessWidget {
                     }),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

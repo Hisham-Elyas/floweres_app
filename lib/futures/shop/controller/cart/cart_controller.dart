@@ -52,6 +52,9 @@ class CartController extends GetxController {
   }
 
   void addItemToCart({required ProductsModel product}) {
+    if (!product.isActive) {
+      HLoaders.warningSnackBar(title: ' السلة', message: "نفدت الكمية");
+    }
     int index = cartItems.indexWhere((item) => item.productId == product.id);
 
     if (index != -1) {
@@ -76,7 +79,8 @@ class CartController extends GetxController {
     Get.closeAllSnackbars();
     saveCart(); // Save updated cart
 
-    HLoaders.successSnackBar(title: "Cart", message: "Item Added to Cart ✅");
+    HLoaders.successSnackBar(
+        title: 'تمت الإضافة', message: "تمت إضافة المنتج إلى السلة'✅");
   }
 
   @override
@@ -101,6 +105,13 @@ class CartController extends GetxController {
 
   goToCheckoutScreen() async {
     if (AuthRepo.instance.isAuthenticated) {
+      if (cartItems.isEmpty) {
+        HLoaders.warningSnackBar(
+          title: 'السلة',
+          message: "لا توجد عناصر في السلة",
+        );
+        return;
+      }
       Get.to(() => CheckoutScreen());
     } else {
       ///  open Login

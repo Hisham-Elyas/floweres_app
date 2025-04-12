@@ -13,10 +13,11 @@ class HResponsiveWidget extends StatelessWidget {
       required this.desktop,
       required this.tablet,
       required this.mobile});
-  static double responsive(
-      {required double desktop,
-      required double tablet,
-      required double mobile}) {
+  static double responsiveValue({
+    required double desktop,
+    required double tablet,
+    required double mobile,
+  }) {
     if (HDeviceUtils.isDesktopScreen(Get.context!)) {
       return desktop;
     } else if (HDeviceUtils.isTabletScreen(Get.context!)) {

@@ -160,9 +160,14 @@ class CheckoutScreen extends StatelessWidget {
               : _buildBranchDetails()),
           SizedBox(height: 20.h),
           _buildConfirmButton(
-            text: "تأكيد العنوان",
-            onPressed: controller.confirmAddress,
-          ),
+              text: "تأكيد العنوان",
+              onPressed: () {
+                if (controller.selectedDeliveryMethod.value == 1) {
+                  controller.confirmAddress();
+                } else {
+                  controller.currentStep.value = 3;
+                }
+              }),
         ],
       ),
     );
@@ -244,168 +249,15 @@ class CheckoutScreen extends StatelessWidget {
     return Obx(() {
       switch (controller.state.value) {
         case CheckoutState.add:
-          return _buildAddressForm();
+          return AddressForm(controller: controller);
         case CheckoutState.editing:
-          return _buildAddressForm();
+          return AddressForm(controller: controller);
         case CheckoutState.select:
           return _buildSelectAddress();
         default:
-          return _buildAddressForm();
+          return AddressForm(controller: controller);
       }
     });
-  }
-
-  Widget _buildAddressForm() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildAddressFormHeader(),
-            SizedBox(height: 10.h),
-            _buildCountryDropdown(),
-            SizedBox(height: 10.h),
-            _buildCityDropdown(),
-            SizedBox(height: 10.h),
-            _buildStreetField(),
-            SizedBox(height: 10.h),
-            _buildDistrictField(),
-            SizedBox(height: 10.h),
-            _buildHouseDescriptionField(),
-            SizedBox(height: 10.h),
-            _buildPostalCodeField(),
-            SizedBox(height: 15.h),
-            _buildSaveAddressButton(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddressFormHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        if (controller.addresses.isNotEmpty)
-          IconButton(
-            onPressed: () {
-              controller.state.value = CheckoutState.select;
-              controller.clearForm();
-            },
-            icon: Icon(
-              Iconsax.close_circle,
-              size: 32.sp,
-              color: AppColor.emptyColor,
-            ),
-          ),
-        const Spacer(),
-        Padding(
-          padding: EdgeInsets.only(right: 15.w),
-          child: Text(
-            "إضافة عنوان جديد",
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCountryDropdown() {
-    return Obx(
-      () => DropdownButtonFormField<String>(
-        value: controller.selectedCountry.value,
-        items: ["السعودية"]
-            .map((country) => DropdownMenuItem(
-                  value: country,
-                  child: Text(country),
-                ))
-            .toList(),
-        onChanged: (value) => controller.selectedCountry.value = value!,
-        decoration: const InputDecoration(
-          labelText: "اختر الدولة",
-          border: OutlineInputBorder(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCityDropdown() {
-    return Obx(
-      () => DropdownButtonFormField<String>(
-        value: controller.selectedCity.value,
-        items: ["الرياض", "جدة", "الدمام"]
-            .map((city) => DropdownMenuItem(
-                  value: city,
-                  child: Text(city),
-                ))
-            .toList(),
-        onChanged: (value) => controller.selectedCity.value = value!,
-        decoration: const InputDecoration(
-          labelText: "اختر المدينة",
-          border: OutlineInputBorder(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStreetField() {
-    return TextFormField(
-      controller: controller.streetController,
-      decoration: const InputDecoration(
-        labelText: "اسم الشارع",
-        border: OutlineInputBorder(),
-      ),
-    );
-  }
-
-  Widget _buildDistrictField() {
-    return TextFormField(
-      controller: controller.districtController,
-      decoration: const InputDecoration(
-        labelText: "اسم الحي",
-        border: OutlineInputBorder(),
-      ),
-    );
-  }
-
-  Widget _buildHouseDescriptionField() {
-    return TextFormField(
-      controller: controller.houseDescController,
-      decoration: const InputDecoration(
-        labelText: "وصف البيت (اختياري)",
-        border: OutlineInputBorder(),
-      ),
-    );
-  }
-
-  Widget _buildPostalCodeField() {
-    return TextFormField(
-      controller: controller.postalCodeController,
-      decoration: const InputDecoration(
-        labelText: "الرمز البريدي",
-        border: OutlineInputBorder(),
-      ),
-    );
-  }
-
-  Widget _buildSaveAddressButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColor.primaryColor,
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-        ),
-        onPressed: controller.saveAddress,
-        child: Text(
-          "حفظ العنوان",
-          style: TextStyle(color: Colors.white, fontSize: 18.sp),
-        ),
-      ),
-    );
   }
 
   Widget _buildSelectAddress() {
@@ -536,7 +388,7 @@ class CheckoutScreen extends StatelessWidget {
       final isSelected = controller.selectedPaymentMethod.value == method;
       return Expanded(
         child: GestureDetector(
-          onTap: () => controller.selectPaymentMethod(method),
+          onTap: () => controller.selectedPaymentMethod(method),
           child: Container(
             padding: EdgeInsets.all(8.w),
             margin: EdgeInsets.only(right: 8.w),
@@ -561,7 +413,7 @@ class CheckoutScreen extends StatelessWidget {
                     value: method,
                     groupValue: controller.selectedPaymentMethod.value,
                     onChanged: (value) =>
-                        controller.selectPaymentMethod(value!),
+                        controller.selectedPaymentMethod(value!),
                     activeColor: AppColor.primaryColor,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
@@ -827,6 +679,152 @@ class AddressTile extends StatelessWidget {
           onPressed: onDelete,
         ),
       ],
+    );
+  }
+}
+
+class AddressForm extends StatelessWidget {
+  final CheckoutController controller;
+
+  const AddressForm({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            SizedBox(height: 10.h),
+            _buildDropdowns(),
+            SizedBox(height: 10.h),
+            _buildTextFields(),
+            SizedBox(height: 15.h),
+            _buildSaveButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        if (controller.addresses.isNotEmpty)
+          IconButton(
+            onPressed: () {
+              controller.state.value = CheckoutState.select;
+              controller.clearForm();
+            },
+            icon: Icon(
+              Iconsax.close_circle,
+              size: 32.sp,
+              color: AppColor.emptyColor,
+            ),
+          ),
+        const Spacer(),
+        Padding(
+          padding: EdgeInsets.only(right: 15.w),
+          child: Text(
+            "إضافة عنوان جديد",
+            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdowns() {
+    return Column(
+      children: [
+        _buildCountryDropdown(),
+        SizedBox(height: 10.h),
+        _buildCityDropdown(),
+      ],
+    );
+  }
+
+  Widget _buildCountryDropdown() {
+    return Obx(
+      () => DropdownButtonFormField<String>(
+        value: controller.selectedCountry.value,
+        items: ["السعودية"]
+            .map((country) => DropdownMenuItem(
+                  value: country,
+                  child: Text(country),
+                ))
+            .toList(),
+        onChanged: (value) => controller.selectedCountry.value = value!,
+        decoration: const InputDecoration(
+          labelText: "اختر الدولة",
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCityDropdown() {
+    return Obx(
+      () => DropdownButtonFormField<String>(
+        value: controller.selectedCity.value,
+        items: ["الرياض", "جدة", "الدمام"]
+            .map((city) => DropdownMenuItem(
+                  value: city,
+                  child: Text(city),
+                ))
+            .toList(),
+        onChanged: (value) => controller.selectedCity.value = value!,
+        decoration: const InputDecoration(
+          labelText: "اختر المدينة",
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextFields() {
+    return Column(
+      children: [
+        _buildTextField(controller.streetController, "اسم الشارع"),
+        SizedBox(height: 10.h),
+        _buildTextField(controller.districtController, "اسم الحي"),
+        SizedBox(height: 10.h),
+        _buildTextField(controller.houseDescController, "وصف البيت (اختياري)"),
+        SizedBox(height: 10.h),
+        _buildTextField(controller.postalCodeController, "الرمز البريدي"),
+      ],
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColor.primaryColor,
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+        ),
+        onPressed: controller.saveAddress,
+        child: Text(
+          "حفظ العنوان",
+          style: TextStyle(color: Colors.white, fontSize: 18.sp),
+        ),
+      ),
     );
   }
 }

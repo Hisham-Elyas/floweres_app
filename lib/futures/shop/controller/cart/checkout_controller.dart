@@ -16,20 +16,19 @@ class CheckoutController extends GetxController {
   final _storage = HLocalStorage.instance();
 
   // Step management
-  final RxInt currentStep = 1.obs; // 1: Address, 2: Shipping, 3: Payment
+  final RxInt currentStep = 1.obs;
 
   // Address form controllers
-  var selectedCountry = "السعودية".obs;
-  var selectedCity = "الرياض".obs;
-  var streetController = TextEditingController();
-  var districtController = TextEditingController();
-  var houseDescController = TextEditingController();
-  var postalCodeController = TextEditingController();
+  final selectedCountry = "السعودية".obs;
+  final selectedCity = "الرياض".obs;
+  final streetController = TextEditingController();
+  final districtController = TextEditingController();
+  final houseDescController = TextEditingController();
+  final postalCodeController = TextEditingController();
 
   // Address management
   final RxList<Address> addresses = <Address>[].obs;
   final Rx<Address?> selectedAddress = Rx<Address?>(null);
-  final RxString selectedAddressId = ''.obs;
 
   // Checkout state
   final Rx<CheckoutState> state = CheckoutState.add.obs;
@@ -37,11 +36,10 @@ class CheckoutController extends GetxController {
   Address? editingAddress;
 
   // Delivery and payment
-  var selectedDeliveryMethod = 1.obs; // 1: Home Delivery, 2: Branch Pickup
-  var selectedPaymentMethod = 'mada'.obs;
-  final RxString selectedShippingCompany = ''.obs;
+  final selectedDeliveryMethod = 1.obs; // 1: Home Delivery, 2: Branch Pickup
+  final selectedPaymentMethod = 'mada'.obs;
+  final selectedShippingCompany = ''.obs;
   final shippingNotesController = TextEditingController();
-  var couponController = TextEditingController();
 
   @override
   void onInit() {
@@ -56,28 +54,29 @@ class CheckoutController extends GetxController {
 
   // Address methods
   void loadAddresses() {
-    List<dynamic>? storedAddresses =
-        _storage.readData<List<dynamic>>('ADDRESSES');
+    final storedAddresses = _storage.readData<List<dynamic>>('ADDRESSES');
     if (storedAddresses != null) {
       addresses.assignAll(
-          storedAddresses.map((json) => Address.fromMap(json)).toList());
+        storedAddresses.map((json) => Address.fromMap(json)).toList(),
+      );
     }
   }
 
   void saveAddresses() {
-    List<Map<String, dynamic>> addressJson =
-        addresses.map((item) => item.toMap()).toList();
+    final addressJson = addresses.map((item) => item.toMap()).toList();
     _storage.writeData('ADDRESSES', addressJson);
   }
 
   void selectAddress(Address address) {
     selectedAddress.value = address;
-    selectedAddressId.value = address.id;
   }
 
-  bool isSelected(Address address) => selectedAddressId.value == address.id;
+  bool isSelected(Address address) => selectedAddress.value?.id == address.id;
 
-  void addNewAddress() => state.value = CheckoutState.add;
+  void addNewAddress() {
+    state.value = CheckoutState.add;
+    clearForm();
+  }
 
   void initForm(Address? address) {
     if (address != null) {
@@ -175,44 +174,45 @@ class CheckoutController extends GetxController {
     }
   }
 
-  void selectPaymentMethod(String method) =>
-      selectedPaymentMethod.value = method;
-
-  void applyCoupon() => Get.snackbar("Coupon", "تم تطبيق الكوبون بنجاح (مثال)");
-
   void confirmOrder() async {
-    HFullScreenLoader.popUpCircular();
     if (selectedDeliveryMethod.value == 1 && selectedAddress.value == null) {
       Get.snackbar('خطأ', 'يرجى اختيار عنوان أولاً');
       currentStep.value = 1;
       return;
     }
-    // Your order confirmation logic here
-    CartController cartController = CartController.instance;
-    final order = OrderModel(
-        userId: ProfileController.instance.user.value.id!,
-        totalAmount: double.parse(cartController.totalAmountcartItems),
-        shippingNotes: shippingNotesController.text,
 
-        // 1: Home Delivery, 2: Branch Pickup
-        deliveryMethod: selectedDeliveryMethod.value == 1
-            ? DeliveryMethod.homeDelivery
-            : DeliveryMethod.branchPickup,
-        shippingAddress: selectedAddress.value,
-        shippingCompany: selectedShippingCompany.value,
-        paymentMethod: selectedPaymentMethod.value,
-        item: cartController.cartItems);
+    if (selectedDeliveryMethod.value == 1 &&
+        selectedShippingCompany.value.isEmpty) {
+      Get.snackbar("خطأ", "يرجى اختيار شركة شحن");
+      currentStep.value = 2;
+      return;
+    }
+
+    HFullScreenLoader.popUpCircular();
+    final cartController = CartController.instance;
+    final order = OrderModel(
+      userId: ProfileController.instance.user.value.id!,
+      totalAmount: double.parse(cartController.totalAmountcartItems),
+      shippingNotes: shippingNotesController.text,
+      deliveryMethod: selectedDeliveryMethod.value == 1
+          ? DeliveryMethod.homeDelivery
+          : DeliveryMethod.branchPickup,
+      shippingAddress: selectedAddress.value,
+      shippingCompany: selectedShippingCompany.value,
+      paymentMethod: selectedPaymentMethod.value,
+      item: cartController.cartItems,
+    );
 
     try {
       await Get.put(OrderRepo()).createOrder(order: order);
       cartController.clearCart();
       HFullScreenLoader.stopLoading();
       Get.offAllNamed(HRoutes.home);
+      Get.snackbar("تم التأكيد", "تم تأكيد الطلب بنجاح");
     } catch (e) {
       HFullScreenLoader.stopLoading();
-      HLoaders.errorSnackBar(title: "Oh Snap!", message: e.toString());
+      HLoaders.errorSnackBar(title: "خطأ", message: e.toString());
     }
-    Get.snackbar("تم التأكيد", "تم تأكيد الطلب بنجاح");
   }
 }
 

@@ -12,13 +12,21 @@ import '../../model/address_model.dart';
 import '../../model/order_model.dart';
 import 'cart_controller.dart';
 
+/// Controller responsible for handling checkout process flow
 class CheckoutController extends GetxController {
+  /// Key for validating address form
+  final addressFormKey = GlobalKey<FormState>();
+
+  /// Key for validating payment methods form
+  final paymentMethodsFormKey = GlobalKey<FormState>();
+
+  /// Local storage instance for saving/retrieving addresses
   final _storage = HLocalStorage.instance();
 
-  // Step management
+  /// Current step in the checkout process (1: Address, 2: Shipping, 3: Payment)
   final RxInt currentStep = 1.obs;
 
-  // Address form controllers
+  /// Address form controllers and fields
   final selectedCountry = "السعودية".obs;
   final selectedCity = "الرياض".obs;
   final streetController = TextEditingController();
@@ -26,33 +34,53 @@ class CheckoutController extends GetxController {
   final houseDescController = TextEditingController();
   final postalCodeController = TextEditingController();
 
-  // Address management
+  /// Payment form controllers
+  final TextEditingController cvcController = TextEditingController();
+  final TextEditingController expiryDateController = TextEditingController();
+  final TextEditingController cardNumberController = TextEditingController();
+
+  /// List of user saved addresses
   final RxList<Address> addresses = <Address>[].obs;
+
+  /// Currently selected address for delivery
   final Rx<Address?> selectedAddress = Rx<Address?>(null);
 
-  // Checkout state
+  /// Current state of the checkout form (adding, editing, or selecting address)
   final Rx<CheckoutState> state = CheckoutState.add.obs;
+
+  /// Flag indicating if user is editing an existing address
   final RxBool isEditing = false.obs;
+
+  /// Address being edited currently
   Address? editingAddress;
 
-  // Delivery and payment
-  final selectedDeliveryMethod = 1.obs; // 1: Home Delivery, 2: Branch Pickup
+  /// Selected delivery method (1: Home Delivery, 2: Branch Pickup)
+  final selectedDeliveryMethod = 1.obs;
+
+  /// Selected payment method (e.g., 'mada')
   final selectedPaymentMethod = 'mada'.obs;
+
+  /// Selected shipping company for delivery
   final selectedShippingCompany = ''.obs;
+
+  /// Notes for shipping/delivery
   final shippingNotesController = TextEditingController();
 
   @override
   void onInit() {
     super.onInit();
+    // Load saved addresses from local storage
     loadAddresses();
+    // If addresses exist, default to select mode
     if (addresses.isNotEmpty) {
       state.value = CheckoutState.select;
     }
   }
 
+  /// Determines if shipping step should be shown based on delivery method
   bool get showShippingStep => selectedDeliveryMethod.value == 1;
 
-  // Address methods
+  /// Loads saved addresses from local storage
   void loadAddresses() {
     final storedAddresses = _storage.readData<List<dynamic>>('ADDRESSES');
     if (storedAddresses != null) {
@@ -62,22 +90,27 @@ class CheckoutController extends GetxController {
     }
   }
 
+  /// Saves addresses to local storage
   void saveAddresses() {
     final addressJson = addresses.map((item) => item.toMap()).toList();
     _storage.writeData('ADDRESSES', addressJson);
   }
 
+  /// Sets an address as the selected one
   void selectAddress(Address address) {
     selectedAddress.value = address;
   }
 
+  /// Checks if an address is the currently selected one
   bool isSelected(Address address) => selectedAddress.value?.id == address.id;
 
+  /// Switches to add address mode and clears form
   void addNewAddress() {
     state.value = CheckoutState.add;
     clearForm();
   }
 
+  /// Initializes form with existing address data for editing
   void initForm(Address? address) {
     if (address != null) {
       selectedCountry.value = address.country;
@@ -92,7 +125,15 @@ class CheckoutController extends GetxController {
     }
   }
 
+  /// Saves or updates address based on form data
   void saveAddress() {
+    if (!addressFormKey.currentState!.validate()) {
+      HLoaders.errorSnackBar(
+        title: '❌ خطأ',
+        message: 'يرجى ملء جميع الحقول المطلوبة بشكل صحيح 📝',
+      );
+      return;
+    }
     final address = Address(
       id: editingAddress?.id ?? DateTime.now().toIso8601String(),
       city: selectedCity.value,
@@ -113,15 +154,23 @@ class CheckoutController extends GetxController {
     clearForm();
     state.value = CheckoutState.select;
     saveAddresses();
-    Get.snackbar('تم الحفظ', 'تم حفظ العنوان بنجاح');
+    HLoaders.successSnackBar(
+      title: '✅ تم الحفظ',
+      message: 'تم حفظ العنوان بنجاح 🏠',
+    );
   }
 
+  /// Deletes an address by ID
   void deleteAddress(String id) {
     addresses.removeWhere((a) => a.id == id);
-    Get.snackbar('تم الحذف', 'تم حذف العنوان بنجاح');
+    HLoaders.successSnackBar(
+      title: '🗑️ تم الحذف',
+      message: 'تم حذف العنوان بنجاح ✂️',
+    );
     if (addresses.isEmpty) state.value = CheckoutState.add;
   }
 
+  /// Clears all form fields and resets editing state
   void clearForm() {
     streetController.clear();
     districtController.clear();
@@ -131,65 +180,100 @@ class CheckoutController extends GetxController {
     editingAddress = null;
   }
 
-  // Validation and confirmation methods
+  /// Validates the address step before proceeding
   bool validateAddressStep() {
     if (selectedDeliveryMethod.value == 1 && selectedAddress.value == null) {
-      Get.snackbar('خطأ', 'يرجى اختيار عنوان أولاً');
+      HLoaders.errorSnackBar(
+        title: '❌ خطأ',
+        message: 'يرجى اختيار عنوان أولاً 📍',
+      );
       return false;
     }
     return true;
   }
 
+  /// Validates the shipping step before proceeding
   bool validateShippingStep() {
     if (selectedShippingCompany.value.isEmpty) {
-      Get.snackbar("خطأ", "يرجى اختيار شركة شحن");
+      HLoaders.errorSnackBar(
+        title: '❌ خطأ',
+        message: 'يرجى اختيار شركة شحن 🚚',
+      );
       return false;
     }
     return true;
   }
 
+  /// Validates the payment step before proceeding
   bool validatePaymentStep() {
     if (selectedPaymentMethod.value.isEmpty) {
-      Get.snackbar("خطأ", "يرجى اختيار طريقة دفع");
+      HLoaders.errorSnackBar(
+        title: '❌ خطأ',
+        message: 'يرجى اختيار طريقة دفع 💳',
+      );
       return false;
     }
     return true;
   }
 
+  /// Confirms address and moves to next step if valid
   void confirmAddress() {
     if (validateAddressStep()) {
       currentStep.value = 2;
     }
   }
 
+  /// Confirms shipping and moves to next step if valid
   void confirmShipping() {
     if (validateShippingStep()) {
       currentStep.value = 3;
     }
   }
 
+  /// Confirms payment and finalizes order if valid
   void confirmPayment() {
     if (validatePaymentStep()) {
       confirmOrder();
     }
   }
 
+  /// Creates and submits the final order
   void confirmOrder() async {
+    // Validate address is selected for home delivery
     if (selectedDeliveryMethod.value == 1 && selectedAddress.value == null) {
-      Get.snackbar('خطأ', 'يرجى اختيار عنوان أولاً');
+      HLoaders.errorSnackBar(
+        title: '❌ خطأ',
+        message: 'يرجى اختيار عنوان أولاً 📍',
+      );
       currentStep.value = 1;
       return;
     }
 
+    // Validate shipping company is selected for home delivery
     if (selectedDeliveryMethod.value == 1 &&
         selectedShippingCompany.value.isEmpty) {
-      Get.snackbar("خطأ", "يرجى اختيار شركة شحن");
+      HLoaders.errorSnackBar(
+        title: '❌ خطأ',
+        message: 'يرجى اختيار شركة شحن 🚚',
+      );
       currentStep.value = 2;
       return;
     }
 
+    // Validate payment form
+    if (!paymentMethodsFormKey.currentState!.validate()) {
+      HLoaders.errorSnackBar(
+        title: '❌ خطأ',
+        message: 'يرجى ملء جميع الحقول المطلوبة بشكل صحيح 📝',
+      );
+      return;
+    }
+
+    // Show loading indicator
     HFullScreenLoader.popUpCircular();
     final cartController = CartController.instance;
+
+    // Create order model with all data
     final order = OrderModel(
       userId: ProfileController.instance.user.value.id!,
       totalAmount: double.parse(cartController.totalAmountcartItems),
@@ -204,16 +288,24 @@ class CheckoutController extends GetxController {
     );
 
     try {
+      // Submit order to repository
       await Get.put(OrderRepo()).createOrder(order: order);
       cartController.clearCart();
       HFullScreenLoader.stopLoading();
       Get.offAllNamed(HRoutes.home);
-      Get.snackbar("تم التأكيد", "تم تأكيد الطلب بنجاح");
+      HLoaders.successSnackBar(
+        title: "🎉 تم التأكيد",
+        message: "تم تأكيد الطلب بنجاح 🛒",
+      );
     } catch (e) {
       HFullScreenLoader.stopLoading();
-      HLoaders.errorSnackBar(title: "خطأ", message: e.toString());
+      HLoaders.errorSnackBar(
+        title: "❌ خطأ",
+        message: "حدث خطأ أثناء تأكيد الطلب: ${e.toString()}",
+      );
     }
   }
 }
 
+/// Enum representing different states of the checkout process
 enum CheckoutState { add, editing, select }

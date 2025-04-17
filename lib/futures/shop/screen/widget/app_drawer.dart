@@ -1,9 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/sizes.dart';
@@ -21,8 +19,6 @@ class MyDrawer extends StatelessWidget {
     final categoriesController = Get.put(CategoriesController());
     final isDesktop =
         MediaQuery.of(context).size.width >= HSizes.desktopScreenSize;
-    final isTablet =
-        MediaQuery.of(context).size.width >= HSizes.tabletScreenSize;
 
     return Drawer(
       width: isDesktop ? 300.w : null, // Fixed width for desktop
@@ -47,23 +43,9 @@ class MyDrawer extends StatelessWidget {
                   horizontal: isDesktop ? HSizes.xl : HSizes.md,
                   vertical: isDesktop ? HSizes.xl : HSizes.md,
                 ),
-                child: CachedNetworkImage(
-                  imageUrl:
-                      "https://cdn.salla.sa/form-builder/AxYPwEeamyUfaMJAnVot8a2HMLl0fQdjT6DbZRes.png",
-                  fit: BoxFit.contain,
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      Skeletonizer(
-                    enableSwitchAnimation: true,
-                    enabled: true,
-                    child: Skeleton.shade(
-                      child: Icon(
-                        Iconsax.image,
-                        size: isDesktop ? 80.dm : 60.dm,
-                      ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) =>
-                      Icon(Icons.error, size: isDesktop ? 80.dm : 60.dm),
+                child: Image.asset(
+                  "assets/images/logo.png",
+                  fit: BoxFit.fill,
                 ),
               ),
 

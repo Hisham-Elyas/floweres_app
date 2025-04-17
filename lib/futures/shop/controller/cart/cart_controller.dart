@@ -7,7 +7,7 @@ import '../../../../utils/popups/loaders.dart';
 import '../../../auth/widget/login_widget.dart';
 import '../../model/cart_itme_model.dart';
 import '../../model/products_model.dart';
-import '../../screen/home/cart/checkout_screen.dart';
+import '../../screen/home/checkout/checkout_screen.dart';
 
 class CartController extends GetxController {
   static CartController get instance => Get.find();

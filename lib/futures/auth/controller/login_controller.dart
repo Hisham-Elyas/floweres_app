@@ -28,6 +28,7 @@ class LoginController extends GetxController {
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
         isLoading.value = false;
+
         return;
       }
       if (!loginFormKey.currentState!.validate()) {
